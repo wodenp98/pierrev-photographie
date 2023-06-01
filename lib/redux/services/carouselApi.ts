@@ -2,28 +2,26 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../lib/firebase/index";
 
-type BoutiqueItem = {
+type CarouselItem = {
   id: string;
   nom: string;
-  price: number;
-  description: string;
   imageUrl: string;
 };
 
-export const boutiqueApi = createApi({
-  reducerPath: "boutiqueApi",
+export const carouselApi = createApi({
+  reducerPath: "carouselApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    getBoutiqueItems: builder.query<BoutiqueItem[], void>({
+    getCarouselItems: builder.query<CarouselItem[], void>({
       async queryFn() {
         try {
-          const ref = collection(db, "Boutique");
+          const ref = collection(db, "Carousel");
           const querySnapshot = await getDocs(ref);
-          let boutiqueItem: BoutiqueItem[] = [];
+          let carouselItem: CarouselItem[] = [];
           querySnapshot?.forEach((doc) => {
-            boutiqueItem.push({ id: doc.id, ...doc.data() } as BoutiqueItem);
+            carouselItem.push({ id: doc.id, ...doc.data() } as CarouselItem);
           });
-          return { data: boutiqueItem };
+          return { data: carouselItem };
         } catch (error: any) {
           console.error(error.message);
           return { error: error.message };
@@ -33,4 +31,4 @@ export const boutiqueApi = createApi({
   }),
 });
 
-export const { useGetBoutiqueItemsQuery } = boutiqueApi;
+export const { useGetCarouselItemsQuery } = carouselApi;
