@@ -1,6 +1,8 @@
 import React from "react";
 import { Inter } from "next/font/google";
+import "./globals.css";
 import { Providers } from "../../lib/redux/provider";
+import NavbarComponent from "../../components/Navbars/NavbarComponent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,9 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <NavbarComponent />
+          {children}
+        </Providers>
       </body>
     </html>
   );
