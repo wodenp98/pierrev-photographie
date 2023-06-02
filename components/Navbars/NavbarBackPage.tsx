@@ -2,6 +2,7 @@ import Image from "next/image";
 import { RiMenu4Fill } from "react-icons/ri";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { IoIosArrowBack } from "react-icons/io";
+import LogoPierre from "/logo Pierre Photographie.png";
 
 export default function Navbar() {
   return (
@@ -10,8 +11,8 @@ export default function Navbar() {
         <IoIosArrowBack className="w-[30px] h-[30px]" strokeWidth={0.05} />
       </div>
       <Image
-        src="/logo Pierre Photographie.png"
-        alt="Logo"
+        src={LogoPierre}
+        alt="Logo Pierre Photographie"
         width={130}
         height={100}
         priority={true}

@@ -4,8 +4,11 @@ import { HiOutlineShoppingBag } from "react-icons/hi";
 
 export default function Navbar() {
   return (
-    <header className="flex items-center justify-evenly w-full">
-      <div className="w-[80px]"></div>
+    <header className="flex items-center justify-between w-full">
+      <div className="p-4">
+        <RiMenu4Fill className="w-[30px] h-[33px]" />
+      </div>
+
       <Image
         src="/logo Pierre Photographie.png"
         alt="Logo"
@@ -13,12 +16,11 @@ export default function Navbar() {
         height={100}
         priority={true}
       />
-      <div className="w-[80px] flex justify-evenly">
+      <div className="p-4">
         <HiOutlineShoppingBag
           className="w-[30px] h-[30px]"
           strokeWidth={0.975}
         />
-        <RiMenu4Fill className="w-[30px] h-[33px]" />
       </div>
     </header>
   );
