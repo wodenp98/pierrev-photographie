@@ -1,20 +1,59 @@
+"use client";
+
 import Image from "next/image";
-// import PhotoPierre from "/photo-pierre.jpg";
+import PhotoPierre from "/public/photo-pierre.jpg";
+import { useGetPhotographItemsQuery } from "../../lib/redux/services/photographApi";
 
 export default function PhotographComponent() {
-  return (
-    <section className="bg-lightBlue h-[800px]">
-      <h1>Le photographe</h1>
+  const { data, isLoading, isError } = useGetPhotographItemsQuery();
 
-      <div className="bg-white rounded-t-lg">
-        <div className="relative w-28 h-28">
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error fetching photograph items.</div>;
+  }
+
+  return (
+    <section className="bg-lightBlue h-[700px]">
+      <h1 className="flex items-center justify-center text-4xl pt-8">
+        Le photographe
+      </h1>
+
+      <div className="flex items-center flex-col mt-24 bg-white rounded-t-[40px] h-5/6">
+        <div className="relative top-[-12%] w-36 h-36">
           <Image
             className="rounded-full"
-            src="/photo-pierre.jpg"
+            src={PhotoPierre}
             alt="Photo Pierre"
             fill={true}
             object-fit="cover"
           />
+        </div>
+
+        <h2 className="text-lg text-center">
+          Mon travail est d’offrir à chacun la possibilité de trouver une
+          résonnence dans la photographie qu’il contemple
+        </h2>
+
+        <div className="grid grid-cols-3 gap-4 mt-6 p-4">
+          {data?.map((item) => (
+            <Image
+              src={item.imageUrl}
+              alt={item.nom}
+              key={item.id}
+              width={200}
+              height={150}
+              className="rounded-lg col-span-1"
+            />
+          ))}
+        </div>
+
+        <div className="w-full flex justify-center p-8 z-10">
+          <button className="bg-lightBlue rounded-lg text-xl text-black  py-2 px-4 ">
+            VOIR PLUS
+          </button>
         </div>
       </div>
     </section>

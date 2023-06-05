@@ -2,7 +2,7 @@ import Image from "next/image";
 import { RiMenu4Fill } from "react-icons/ri";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { IoIosArrowBack } from "react-icons/io";
-import LogoPierre from "/logo Pierre Photographie.png";
+import LogoPierre from "/logo-home-pierre-photographie.png";
 
 export default function Navbar() {
   return (

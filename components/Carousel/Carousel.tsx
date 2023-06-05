@@ -20,7 +20,7 @@ export default function Carousel() {
   }
 
   if (isError) {
-    return <div>Error fetching boutique items.</div>;
+    return <div>Error fetching Carousel items.</div>;
   }
   return (
     <div className="relative h-[calc(100vh-97.5px)]">

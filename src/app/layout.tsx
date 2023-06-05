@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "../../lib/redux/provider";
 // import NavbarComponent from "../../components/Navbars/NavbarComponent";
 import NavbarHomePage from "../../components/Navbars/NavbarHomePage";
+import Footer from "../../components/Footer/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
         <Providers>
           <NavbarHomePage />
           {children}
+          <Footer />
         </Providers>
       </body>
     </html>

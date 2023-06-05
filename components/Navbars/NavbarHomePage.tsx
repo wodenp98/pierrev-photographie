@@ -10,7 +10,7 @@ export default function Navbar() {
       </div>
 
       <Image
-        src="/logo Pierre Photographie.png"
+        src="/logo-home-pierre-photographie.png"
         alt="Logo"
         width={130}
         height={100}
