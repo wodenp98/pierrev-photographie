@@ -5,7 +5,7 @@ import { db } from "../../../lib/firebase/index";
 type BoutiqueItem = {
   id: string;
   nom: string;
-  price: number;
+  prix: number;
   description: string;
   imageUrl: string;
 };
