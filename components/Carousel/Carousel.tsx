@@ -11,6 +11,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Carousel() {
   const { data, isLoading, isError } = useGetCarouselItemsQuery();
@@ -23,7 +24,7 @@ export default function Carousel() {
     return <div>Error fetching Carousel items.</div>;
   }
   return (
-    <div className="relative h-[calc(100vh-97.5px)]">
+    <div className="relative h-screen">
       <Swiper
         modules={[Pagination]}
         slidesPerView={1}
@@ -45,9 +46,11 @@ export default function Carousel() {
         ))}
       </Swiper>
       <div className="absolute bottom-0 left-0 w-full flex justify-center p-14 z-10">
-        <button className="bg-lightBlack text-xl text-white  py-2 px-4 ">
-          BOUTIQUE
-        </button>
+        <Link href="/boutique">
+          <button className="bg-lightBlack text-xl text-white  py-2 px-4 ">
+            BOUTIQUE
+          </button>
+        </Link>
       </div>
     </div>
   );

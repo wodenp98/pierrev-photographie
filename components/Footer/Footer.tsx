@@ -3,14 +3,16 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-lightBlack">
+    <footer className="bg-lightBlack mt-5">
       <div className="flex justify-center">
-        <Image
-          src="/logo-footer-pierre-photographie.jpg"
-          alt="Logo Pierre Photographie"
-          width={150}
-          height={150}
-        />
+        <Link href="/">
+          <Image
+            src="/logo-footer-pierre-photographie.jpg"
+            alt="Logo Pierre Photographie"
+            width={150}
+            height={150}
+          />
+        </Link>
       </div>
 
       <div className="flex flex-col p-4 text-white gap-4">

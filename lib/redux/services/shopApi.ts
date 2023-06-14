@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../../../lib/firebase/index";
 
 type BoutiqueItem = {
@@ -30,7 +30,28 @@ export const boutiqueApi = createApi({
         }
       },
     }),
+    getBoutiqueItemById: builder.query<BoutiqueItem, string>({
+      async queryFn(id: string) {
+        try {
+          const ref = collection(db, "Boutique");
+          const docSnapshot = await getDoc(doc(ref, id));
+          if (docSnapshot.exists()) {
+            const boutiqueItem = {
+              id: docSnapshot.id,
+              ...docSnapshot.data(),
+            } as BoutiqueItem;
+            return { data: boutiqueItem };
+          } else {
+            throw new Error("Article introuvable");
+          }
+        } catch (error: any) {
+          console.error(error.message);
+          return { error: error.message };
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetBoutiqueItemsQuery } = boutiqueApi;
+export const { useGetBoutiqueItemsQuery, useGetBoutiqueItemByIdQuery } =
+  boutiqueApi;
