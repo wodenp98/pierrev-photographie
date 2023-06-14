@@ -9,7 +9,7 @@ interface Props {
     id: string;
   };
 }
-export default function Page({ params: { id } }: Props) {
+export default function BoutiqueItemId({ params: { id } }: Props) {
   const { data, isError, isLoading } = useGetBoutiqueItemByIdQuery(id);
   if (isLoading) {
     return <div>Loading...</div>;
@@ -44,7 +44,6 @@ export default function Page({ params: { id } }: Props) {
           </div>
 
           <p className="text-sm mt-6 text-gray-500">{data?.description}</p>
-          <p className="text-xl mt-6">{data?.prix} €</p>
         </div>
         <ShopForm />
       </section>

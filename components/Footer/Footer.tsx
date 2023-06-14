@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LinkInstagram } from "../LinkPlatform/LinkInstagram";
+import { LinkGmail } from "../LinkPlatform/LinkGmail";
 
 export default function Footer() {
   return (
@@ -16,29 +18,11 @@ export default function Footer() {
       </div>
 
       <div className="flex flex-col p-4 text-white gap-4">
-        <Link href="/dashboard">Mentions légales</Link>
-        <Link href="/dashboard">FAQ</Link>
-        <Link href="/dashboard">CGVU</Link>
-        <Link href="/dashboard" className="flex">
-          <Image
-            src="/icon-instagram.svg"
-            alt="Instagram"
-            width={40}
-            height={40}
-            className="pr-4"
-          />
-          <p>@pierrev.photographie</p>
-        </Link>
-        <Link href="/dashboard" className="flex">
-          <Image
-            src="/icon-gmail.svg"
-            alt="Gmail"
-            width={40}
-            height={40}
-            className="pr-4"
-          />
-          <p>pierrev.photographie@gmail.com</p>
-        </Link>
+        <Link href="/mentions-legales">Mentions légales</Link>
+        <Link href="/FAQ">FAQ</Link>
+        <Link href="/CGVU">CGVU</Link>
+        <LinkInstagram />
+        <LinkGmail />
       </div>
 
       <div className="border-b"></div>
