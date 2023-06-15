@@ -37,7 +37,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`flex items-center justify-between w-full bg-white z-50 fixed top-0 ${
+      className={`flex items-center justify-between w-full bg-white z-50 ${
         isOpen ? "overflow-hidden" : ""
       }`}
     >

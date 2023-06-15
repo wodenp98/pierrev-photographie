@@ -24,7 +24,7 @@ export default function Carousel() {
     return <div>Error fetching Carousel items.</div>;
   }
   return (
-    <div className="relative h-screen">
+    <div className="relative h-[calc(100vh-97.5px)]">
       <Swiper
         modules={[Pagination]}
         slidesPerView={1}

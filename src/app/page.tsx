@@ -3,7 +3,7 @@ import PhotographComponent from "../../components/Photograph/PhotographComponent
 
 export default function Home() {
   return (
-    <main>
+    <main className="container flex-grow">
       <Carousel />
       <PhotographComponent />
     </main>

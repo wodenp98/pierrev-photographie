@@ -1,3 +1,5 @@
+import { AccordionShop } from "../Accordion/Accordion";
+import Image from "next/image";
 import { useState } from "react";
 type FormValues = {
   [key: string]: string;
@@ -60,7 +62,7 @@ export const ShopForm = () => {
   });
 
   const getPrice = (formValues: FormValues) => {
-    let price = 0;
+    let price = 150;
     Object.keys(formValues).forEach((key) => {
       const value = formValues[key];
       if (prices[key] && prices[key][value]) {
@@ -102,13 +104,22 @@ export const ShopForm = () => {
           }
           options={["Subligraphie", "Fine Art seul", "Alu Dibond"]}
         />
-        <div className="mt-2">
-          <span className="mr-1">Price:</span>
-          <span className={`${price >= 0 ? "text-green-600" : "text-red-600"}`}>
-            {price}
-          </span>
+        <div className="mt-2 flex justify-center">
+          <button className="uppercase bg-lightBlack text-lg text-white  py-2 px-4 ">
+            Ajouter au panier {price.toFixed(2)}€
+          </button>
         </div>
       </form>
+      <div className="flex flex-col items-center mt-6">
+        <h2>Impression 100% MADE IN FRANCE</h2>
+        <Image
+          src="/france.png"
+          alt="Drapeau de la France"
+          width={50}
+          height={50}
+        />
+      </div>
+      <AccordionShop />
     </div>
   );
 };
