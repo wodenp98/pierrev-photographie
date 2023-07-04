@@ -1,11 +1,11 @@
 import Carousel from "../../components/Carousel/Carousel";
-import PhotographComponent from "../../components/Photograph/PhotographComponent";
+import Portfolio from "../../components/Portfolio/Portfolio";
 
 export default function Home() {
   return (
     <main className="container flex-grow">
       <Carousel />
-      <PhotographComponent />
+      <Portfolio />
     </main>
   );
 }

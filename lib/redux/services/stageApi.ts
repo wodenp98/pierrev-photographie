@@ -2,29 +2,26 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../lib/firebase/index";
 
-type PhotographItem = {
+type StageItem = {
   id: string;
   nom: string;
   imageUrl: string;
 };
 
-export const photographApi = createApi({
-  reducerPath: "photographApi",
+export const stageApi = createApi({
+  reducerPath: "StageApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    getPhotographItems: builder.query<PhotographItem[], void>({
+    getStageItems: builder.query<StageItem[], void>({
       async queryFn() {
         try {
-          const ref = collection(db, "Photographe");
+          const ref = collection(db, "Stage");
           const querySnapshot = await getDocs(ref);
-          let photographItem: PhotographItem[] = [];
+          let stageItem: StageItem[] = [];
           querySnapshot?.forEach((doc) => {
-            photographItem.push({
-              id: doc.id,
-              ...doc.data(),
-            } as PhotographItem);
+            stageItem.push({ id: doc.id, ...doc.data() } as StageItem);
           });
-          return { data: photographItem };
+          return { data: stageItem };
         } catch (error: any) {
           console.error(error.message);
           return { error: error.message };
@@ -34,4 +31,4 @@ export const photographApi = createApi({
   }),
 });
 
-export const { useGetPhotographItemsQuery } = photographApi;
+export const { useGetStageItemsQuery } = stageApi;
