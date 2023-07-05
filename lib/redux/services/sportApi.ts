@@ -9,7 +9,7 @@ type SportItem = {
 };
 
 export const sportApi = createApi({
-  reducerPath: "SportApi",
+  reducerPath: "sportApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getSportItems: builder.query<SportItem[], void>({

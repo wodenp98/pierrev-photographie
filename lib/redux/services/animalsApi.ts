@@ -21,6 +21,7 @@ export const animalsApi = createApi({
           querySnapshot?.forEach((doc) => {
             animalsItem.push({ id: doc.id, ...doc.data() } as AnimalsItem);
           });
+
           return { data: animalsItem };
         } catch (error: any) {
           console.error(error.message);

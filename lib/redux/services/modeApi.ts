@@ -9,7 +9,7 @@ type ModeItem = {
 };
 
 export const modeApi = createApi({
-  reducerPath: "ModeApi",
+  reducerPath: "modeApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getModeItems: builder.query<ModeItem[], void>({

@@ -9,7 +9,7 @@ type NatureItem = {
 };
 
 export const natureApi = createApi({
-  reducerPath: "NatureApi",
+  reducerPath: "natureApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getNatureItems: builder.query<NatureItem[], void>({

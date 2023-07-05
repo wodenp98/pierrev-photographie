@@ -1,7 +1,21 @@
+"use client";
 import Link from "next/link";
 import { PortfolioImageComponents } from "./PortfolioImageComponents";
+import { useGetAnimalsItemsQuery } from "@/lib/redux/services/animalsApi";
+import { useGetArchitectureItemsQuery } from "@/lib/redux/services/architectureApi";
+import { useGetModeItemsQuery } from "@/lib/redux/services/modeApi";
+import { useGetNatureItemsQuery } from "@/lib/redux/services/natureApi";
+import { useGetSportItemsQuery } from "@/lib/redux/services/sportApi";
+import { useGetStageItemsQuery } from "@/lib/redux/services/stageApi";
 
 export default function PhotographComponent() {
+  const { data: animalsData, isLoading, isError } = useGetAnimalsItemsQuery();
+  const { data: architectureData } = useGetArchitectureItemsQuery();
+  const { data: modeData } = useGetModeItemsQuery();
+  const { data: natureData } = useGetNatureItemsQuery();
+  const { data: sportData } = useGetSportItemsQuery();
+  const { data: stageData } = useGetStageItemsQuery();
+
   return (
     <section className="bg-white">
       <h1 className="flex items-center justify-center text-2xl pt-8">
@@ -17,31 +31,37 @@ export default function PhotographComponent() {
             src="/assets/portfolioAssets/cascade.jpg"
             alt="Cascade"
             theme="PAYSAGE"
+            data={natureData}
           />
           <PortfolioImageComponents
             src="/assets/portfolioAssets/fille5.jpg"
             alt="Fille 5"
             theme="MODE"
+            data={modeData}
           />
           <PortfolioImageComponents
             src="/assets/portfolioAssets/immeublenoiretblanc2.jpg"
             alt="Immeuble"
             theme="ARCHITECTURE"
+            data={architectureData}
           />
           <PortfolioImageComponents
             src="/assets/portfolioAssets/maya2.jpg"
             alt="Maya"
             theme="ANIMALIER"
+            data={animalsData}
           />
           <PortfolioImageComponents
             src="/assets/portfolioAssets/montre3.jpg"
             alt="Montre"
             theme="STUDIO"
+            data={stageData}
           />
           <PortfolioImageComponents
             src="/assets/portfolioAssets/surf2.jpg"
             alt="Surf"
             theme="SPORT"
+            data={sportData}
           />
         </div>
         <div className="w-full flex justify-center p-4 z-10">

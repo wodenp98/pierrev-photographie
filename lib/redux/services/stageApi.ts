@@ -9,7 +9,7 @@ type StageItem = {
 };
 
 export const stageApi = createApi({
-  reducerPath: "StageApi",
+  reducerPath: "stageApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getStageItems: builder.query<StageItem[], void>({
