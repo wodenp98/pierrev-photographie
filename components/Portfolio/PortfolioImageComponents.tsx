@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "./Modal";
+import { AiOutlineClose } from "react-icons/ai";
 import { Navigation, Pagination } from "swiper";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -34,6 +35,14 @@ export const PortfolioImageComponents = ({
 }: PortfolioImage) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isModalOpen]);
+
   return (
     <>
       <div className="group">
@@ -53,7 +62,7 @@ export const PortfolioImageComponents = ({
           </div>
         </div>
       </div>
-      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal open={isModalOpen}>
         <Swiper
           modules={[Pagination]}
           slidesPerView={1}
@@ -64,6 +73,10 @@ export const PortfolioImageComponents = ({
           {data?.map((slide: DataItem) => (
             <SwiperSlide key={slide.id}>
               <div className="relative h-full">
+                <AiOutlineClose
+                  className="absolute z-50 top-2 right-2 text-2xl text-white"
+                  onClick={() => setIsModalOpen(false)}
+                />
                 <Image
                   src={slide.imageUrl}
                   alt={slide.nom}

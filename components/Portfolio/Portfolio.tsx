@@ -21,7 +21,7 @@ export default function PhotographComponent() {
       <h1 className="flex items-center justify-center text-2xl pt-8">
         Bonjour, je suis Pierre Vigneron
       </h1>
-      <h2 className="flex items-center justify-center text-gray-400 text-xl pt-8">
+      <h2 className="flex items-center justify-center text-gray-400 text-xl pt-4">
         Découvrez mon travail
       </h2>
 
