@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import {
   Accordion,
   AccordionContent,
@@ -9,21 +10,25 @@ export const AccordionShop = () => {
   return (
     <Accordion type="single" collapsible>
       <AccordionItem value="item-1">
-        <AccordionTrigger>Is it accessible?</AccordionTrigger>
+        <AccordionTrigger>LA SUBLIGAPHIE</AccordionTrigger>
         <AccordionContent>
-          Yes. It adheres to the WAI-ARIA design pattern.
+          Tirage haut de gamme direct sur un support rigide en aluminium. Cela
+          donne un effet de profondeur et de réalisme à la photo. C'est assez
+          époustouflant
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
-        <AccordionTrigger>Is it accessible?</AccordionTrigger>
+        <AccordionTrigger>FINE ART</AccordionTrigger>
         <AccordionContent>
-          Yes. It adheres to the WAI-ARIA design pattern.
+          Impression sur un papier de grande qualité. Rendu parfait pour
+          exprimer les perceptions et les émotions.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
-        <AccordionTrigger>Is it accessible?</AccordionTrigger>
+        <AccordionTrigger>ALU DIBOND</AccordionTrigger>
         <AccordionContent>
-          Yes. It adheres to the WAI-ARIA design pattern.
+          Impression Fine Art fixée sur une plaque d'aluminium avec crochet
+          intégré. Idéal pour afficher votre photo sans cadre.
         </AccordionContent>
       </AccordionItem>
     </Accordion>

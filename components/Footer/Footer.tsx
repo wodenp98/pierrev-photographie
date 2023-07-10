@@ -19,7 +19,6 @@ export default function Footer() {
 
       <div className="flex flex-col p-4 text-white gap-4">
         <Link href="/mentions-legales">Mentions légales</Link>
-        <Link href="/FAQ">FAQ</Link>
         <Link href="/CGVU">CGVU</Link>
         <LinkInstagram />
         <LinkGmail />
