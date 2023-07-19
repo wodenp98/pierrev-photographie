@@ -92,7 +92,7 @@ export default function Navbar() {
             </Link>
             <div className="h-[1px] bg-gray-400 mx-auto my-4"></div>
             <Link
-              href="/a-propos"
+              href="/apropos"
               className="uppercase flex items-center justify-between"
               onClick={closeMenu}
             >
