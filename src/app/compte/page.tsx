@@ -19,8 +19,28 @@ import {
 } from "../../../components/ui/tabs";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useGetUserByIdQuery } from "@/lib/redux/services/usersApi";
+
+// si user === logged, link to profil/id
+interface UserData {
+  name?: string | null | undefined;
+  email?: string | null | undefined;
+  image?: string | null | undefined;
+  id?: string | null | undefined;
+}
 
 export default function Compte() {
+  const session = useSession();
+  const userId = (session.data?.user as UserData)?.id;
+  const { data, isLoading, isError } = useGetUserByIdQuery(userId || "");
+
+  // url sort profil/undefined
+  if (session) {
+    console.log(data?.id);
+    
+  }
+
   return (
     <main>
       <ul className="flex ml-6">
@@ -61,7 +81,11 @@ export default function Compte() {
                   <div className="text-md">Ou avec</div>
                   <div className="w-20 h-0.5 bg-gray-300 ml-2"></div>
                 </div>
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => signIn("google")}
+                >
                   <FcGoogle className="mr-2 h-4 w-4" />
                   Google
                 </Button>
@@ -105,7 +129,10 @@ export default function Compte() {
                   <div className="w-20 h-0.5 bg-gray-300 ml-2"></div>
                 </div>
                 <Button variant="outline" className="w-full">
-                  <FcGoogle className="mr-2 h-4 w-4" />
+                  <FcGoogle
+                    className="mr-2 h-4 w-4"
+                    onClick={() => signIn("google")}
+                  />
                   Google
                 </Button>
               </CardContent>
