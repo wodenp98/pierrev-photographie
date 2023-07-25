@@ -4,7 +4,7 @@ import "./globals.css";
 import { Providers } from "../../lib/redux/provider";
 import NavbarHomePage from "../../components/Navbars/NavbarHomePage";
 import Footer from "../../components/Footer/Footer";
-import Authprovider from "@/lib/authProvider/authProvider";
+import AuthProvider from "@/lib/authProvider/authProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,11 +22,11 @@ export default async function RootLayout({
     <html lang="fr">
       <body className={`${inter.className} flex flex-col min-h-screen`}>
         <Providers>
-          <Authprovider>
+          <AuthProvider>
             <NavbarHomePage />
             {children}
             <Footer />
-          </Authprovider>
+          </AuthProvider>
         </Providers>
       </body>
     </html>

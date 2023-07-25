@@ -9,6 +9,14 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
     }),
   ],
   adapter: FirestoreAdapter({
@@ -19,10 +27,27 @@ const handler = NextAuth({
     }),
   }) as Adapter,
   callbacks: {
-    async session({ session, token, user }) {
-      session.user = user;
-      return session;
+    async jwt({ token, user }) {
+      if (user) {
+        return { ...token, id: user.id };
+      }
+      return token;
     },
+
+    async session({ session, user }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+        },
+      };
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+
+  session: {
+    strategy: "database",
   },
 });
 
