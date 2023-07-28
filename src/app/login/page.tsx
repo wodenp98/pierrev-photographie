@@ -2,7 +2,6 @@
 "use client";
 
 import React from "react";
-import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "../../../components/ui/button";
 import {
@@ -21,7 +20,24 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 
+import { UserAuth } from "@/lib/context/AuthContext";
+import { redirect } from "next/navigation";
+
 export default function Login() {
+  const { user, googleSignIn } = UserAuth();
+
+  if (user) {
+    return redirect("/compte");
+  }
+
+  const handleSignIn = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <main>
       <section className="flex flex-col items-center mt-4">
@@ -55,7 +71,7 @@ export default function Login() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => signIn("google", { callbackUrl: "/compte" })}
+                  onClick={handleSignIn}
                 >
                   <FcGoogle className="mr-2 h-4 w-4" />
                   Google
@@ -97,10 +113,7 @@ export default function Login() {
                   <div className="w-20 h-0.5 bg-gray-300 ml-2"></div>
                 </div>
                 <Button variant="outline" className="w-full">
-                  <FcGoogle
-                    className="mr-2 h-4 w-4"
-                    onClick={() => signIn("google", { callbackUrl: "/compte" })}
-                  />
+                  <FcGoogle className="mr-2 h-4 w-4" />
                   Google
                 </Button>
               </CardContent>

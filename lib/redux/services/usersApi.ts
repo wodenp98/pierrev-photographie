@@ -3,7 +3,7 @@ import {
   fakeBaseQuery,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
-import { doc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase/index";
 
 interface User {
@@ -20,6 +20,11 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     getUserById: builder.query<User, string>({
       async queryFn(id: string) {
+        // const q = query(collection(db, "accounts"), where("userId", "==", id));
+        // getDocs(q).then((snapshot) => {
+        //   console.log(snapshot.docs[0].data());
+        // });
+
         try {
           const userRef = doc(db, "users", id);
           const userSnapshot = await getDoc(userRef);
@@ -44,12 +49,13 @@ export const userApi = createApi({
       },
     }),
     deleteUserById: builder.mutation({
-      async query({ id }) {
+      async queryFn(id) {
         try {
           const userRef = doc(db, "users", id);
           await deleteDoc(userRef);
-        } catch (error: any) {
-          return { error: error.message };
+          return { data: "ok" };
+        } catch (err: any) {
+          return { error: err.message };
         }
       },
     }),
@@ -57,56 +63,3 @@ export const userApi = createApi({
 });
 
 export const { useGetUserByIdQuery, useDeleteUserByIdMutation } = userApi;
-
-// src/features/scores/scoresSlice.ts
-// import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-// import {
-//   arrayUnion,
-//   collection,
-//   doc,
-//   updateDoc,
-//   getDocs,
-// } from "firebase/firestore";
-// import { firestore } from "../../firebase";
-// import { ScoresTable, ScoresTables } from "../../types";
-
-// export const firestoreApi = createApi({
-//   baseQuery: fakeBaseQuery(),
-//   tagTypes: ["Score"],
-//   endpoints: (builder) => ({
-//     fetchHighScoresTables: builder.query<ScoresTables, void>({
-//       async queryFn() {
-//         try {
-//           const ref = collection(firestore, "scoresTables");
-//           const querySnapshot = await getDocs(ref);
-//           let scoresTables: ScoresTables = [];
-//           querySnapshot?.forEach((doc) => {
-//             scoresTables.push({ id: doc.id, ...doc.data() } as ScoresTable);
-//           });
-//           return { data: scoresTables };
-//         } catch (error: any) {
-//           console.error(error.message);
-//           return { error: error.message };
-//         }
-//       },
-//       providesTags: ["Score"],
-//     }),
-//     setNewHighScore: builder.mutation({
-//       async queryFn({ scoresTableId, newHighScore }) {
-//         try {
-//           await updateDoc(doc(firestore, "scoresTables", scoresTableId), {
-//             scores: arrayUnion(newHighScore),
-//           });
-//           return { data: null };
-//         } catch (error: any) {
-//           console.error(error.message);
-//           return { error: error.message };
-//         }
-//       },
-//       invalidatesTags: ["Score"],
-//     }),
-//   }),
-// });
-
-// export const { useFetchHighScoresTablesQuery, useSetNewHighScoreMutation } =
-//   firestoreApi

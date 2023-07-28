@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { signOut, useSession } from "next-auth/react";
-import { DefaultSession } from "next-auth";
+
 import { CgLogOff } from "react-icons/cg";
 import { BsPencil } from "react-icons/bs";
 import { Button } from "../ui/button";
@@ -16,62 +15,49 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
-import {
-  useGetUserByIdQuery,
-  useDeleteUserByIdMutation,
-} from "@/lib/redux/services/usersApi";
 import Image from "next/image";
 import Link from "next/link";
+import { UserAuth } from "@/lib/context/AuthContext";
+import { $CombinedState } from "@reduxjs/toolkit";
 
-interface DefaultSessionWithId extends DefaultSession {
-  user: {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  };
-}
+export default function Profil() {
+  const { user, logOut, deleteAccount } = UserAuth();
 
-export default function Profil({ propsId }: { propsId: string }) {
-  const { data, isLoading, error } = useGetUserByIdQuery(propsId);
-  const [deleteUserById] = useDeleteUserByIdMutation();
-
-  const handleDeleteUser = async () => {
-    await deleteUserById(propsId);
+  const handleSignOut = async () => {
+    try {
+      await logOut();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const { name, image, email } = data || {};
-
-  const firstName = name?.split(" ")[0];
-  const lastName = name?.split(" ")[1];
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error fetching user.</div>;
-  }
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <section className="flex flex-col items-center mt-4">
       <div className="flex items-end justify-end">
         <div className="relative">
           <Image
-            src={image as string}
-            alt={name as string}
+            src={user.photoURL as string}
+            alt={user.displayName as string}
             width={80}
             height={80}
             className="rounded-full object-cover"
           />
           <CgLogOff
             className="text-3xl  text-red-500 absolute bottom-[-5px] right-[-5px]"
-            onClick={() => signOut()}
+            onClick={handleSignOut}
           />
         </div>
       </div>
 
-      <div className="text-center my-4">Bonjour {firstName} !</div>
+      <div className="text-center my-4">Bonjour {user.displayName} !</div>
       <Tabs defaultValue="informations" className="w-11/12">
         <TabsList
           className="grid w-full h-10 grid-cols-3"
@@ -90,11 +76,11 @@ export default function Profil({ propsId }: { propsId: string }) {
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label htmlFor="nom">Nom</Label>
-                <Input id="nom" defaultValue={lastName} />
+                {/* <Input id="nom" defaultValue={lastName} /> */}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="prenom">Prénom</Label>
-                <Input id="prenom" defaultValue={firstName} />
+                {/* <Input id="prenom" defaultValue={firstName} /> */}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="numero">Numéro</Label>
@@ -102,7 +88,7 @@ export default function Profil({ propsId }: { propsId: string }) {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" defaultValue={email} />
+                {/* <Input id="email" defaultValue={email} /> */}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="password">Mot de passe</Label>
@@ -120,7 +106,7 @@ export default function Profil({ propsId }: { propsId: string }) {
             <CardFooter>
               <Button
                 className="bg-red-600 text-white"
-                onClick={() => handleDeleteUser()}
+                onClick={handleDeleteAccount}
               >
                 Supprimer votre profil
               </Button>
