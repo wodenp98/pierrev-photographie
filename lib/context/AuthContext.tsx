@@ -1,62 +1,3 @@
-// import { createContext, useContext, useEffect, useState } from "react";
-// import {
-//   onAuthStateChanged,
-//   createUserWithEmailAndPassword,
-//   signInWithEmailAndPassword,
-//   signOut,
-// } from "firebase/auth";
-// import { auth } from "../firebase/index";
-
-// const AuthContext = createContext<any>({});
-
-// export const useAuth = () => useContext(AuthContext);
-
-// export const AuthContextProvider = ({
-//   children,
-// }: {
-//   children: React.ReactNode;
-// }) => {
-//   const [user, setUser] = useState<any>(null);
-//   const [loading, setLoading] = useState(true);
-//   console.log(user);
-
-//   useEffect(() => {
-//     const unsubscribe = onAuthStateChanged(auth, (user) => {
-//       if (user) {
-//         setUser({
-//           uid: user.uid,
-//           email: user.email,
-//           displayName: user.displayName,
-//         });
-//       } else {
-//         setUser(null);
-//       }
-//       setLoading(false);
-//     });
-
-//     return () => unsubscribe();
-//   }, []);
-
-//   const signup = (email: string, password: string) => {
-//     return createUserWithEmailAndPassword(auth, email, password);
-//   };
-
-//   const login = (email: string, password: string) => {
-//     return signInWithEmailAndPassword(auth, email, password);
-//   };
-
-//   const logout = async () => {
-//     setUser(null);
-//     await signOut(auth);
-//   };
-
-//   return (
-//     <AuthContext.Provider value={{ user, login, signup, logout }}>
-//       {loading ? null : children}
-//     </AuthContext.Provider>
-//   );
-// };
-
 "use client";
 
 import { useContext, createContext, useState, useEffect } from "react";
@@ -65,15 +6,18 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithRedirect,
+  getRedirectResult,
   deleteUser,
+  signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { redirect } from "next/navigation";
 
 const AuthContext = createContext<any>({});
 
 export const AuthContextProvider = ({ children }: any) => {
   const [user, setUser] = useState<any>(null);
-  // console.log(user);
 
   const googleSignIn = () => {
     const provider = new GoogleAuthProvider();
@@ -81,22 +25,45 @@ export const AuthContextProvider = ({ children }: any) => {
   };
 
   const deleteAccount = async () => {
-    await deleteUser(user);
+    await deleteUser(user).then(() => {
+      deleteDoc(doc(db, "users", user.uid));
+    });
   };
 
   const logOut = () => {
+    setUser(null);
     signOut(auth);
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+
+      if (currentUser) {
+        setDoc(doc(db, "users", currentUser.uid), {
+          id: currentUser.uid,
+          email: currentUser.email,
+          emailVerified: currentUser.emailVerified,
+          image: currentUser.photoURL,
+          firstName: currentUser?.displayName?.split(" ")[0],
+          lastName: currentUser.displayName?.split(" ")[1],
+        });
+      } else {
+        setUser(null);
+      }
     });
     return () => unsubscribe();
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, googleSignIn, logOut, deleteAccount }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        googleSignIn,
+        logOut,
+        deleteAccount,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

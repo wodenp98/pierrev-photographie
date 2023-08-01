@@ -1,8 +1,16 @@
 "use client";
 import Image from "next/image";
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useGetBoutiqueItemByIdQuery } from "../../../../lib/redux/services/shopApi";
+import {
+  useAddToWishlistMutation,
+  useGetWishlistQuery,
+  useDeleteToWishlistMutation,
+} from "@/lib/redux/services/wishlistApi";
 import { ShopForm } from "../../../../components/Form/Form";
+import { UserAuth } from "@/lib/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface Props {
   params: {
@@ -10,7 +18,52 @@ interface Props {
   };
 }
 export default function BoutiqueItemId({ params: { id } }: Props) {
+  const { user } = UserAuth();
+  const router = useRouter();
   const { data, isError, isLoading } = useGetBoutiqueItemByIdQuery(id);
+  const { data: userWishlist, isError: userWishlistError } =
+    useGetWishlistQuery(user?.uid);
+  const [deleteToWishlist] = useDeleteToWishlistMutation();
+  const [addToWishlist] = useAddToWishlistMutation();
+  const [isLiked, setIsLiked] = useState(false);
+
+  console.log(userWishlist);
+
+  useEffect(() => {
+    if (userWishlist) {
+      setIsLiked(userWishlist.some((item) => item.id === id));
+    }
+  }, [userWishlist, id]);
+
+  const handleAddToWishlist = () => {
+    if (!user) {
+      return router.push("/compte");
+    }
+    if (data) {
+      const product = {
+        id: data.id,
+        nom: data.nom,
+        prix: data.prix,
+        description: data.description,
+        imageUrl: data.imageUrl,
+      };
+
+      if (isLiked) {
+        deleteToWishlist({
+          userId: user.uid,
+          product,
+        });
+        setIsLiked(false);
+      } else {
+        addToWishlist({
+          userId: user.uid,
+          product,
+        });
+        setIsLiked(true);
+      }
+    }
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -18,6 +71,7 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
   if (isError) {
     return <div>Error fetching Carousel items.</div>;
   }
+
   return (
     <main>
       <ul className="flex ml-6">
@@ -40,7 +94,18 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
         <div className="mt-3">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl">{data?.nom}</h1>
-            <AiOutlineHeart className="text-2xl" />
+            {/* onclick ici */}
+            {isLiked ? (
+              <AiFillHeart
+                className="text-2xl text-red-600"
+                onClick={handleAddToWishlist}
+              />
+            ) : (
+              <AiOutlineHeart
+                className="text-2xl"
+                onClick={handleAddToWishlist}
+              />
+            )}
           </div>
 
           <p className="text-sm mt-6 text-gray-500">{data?.description}</p>

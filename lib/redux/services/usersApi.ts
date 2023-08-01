@@ -11,7 +11,8 @@ interface User {
   email: string;
   emailVerified: boolean | null;
   image: string | null;
-  name: string;
+  firstName: string;
+  lastName: string;
 }
 
 export const userApi = createApi({
@@ -20,11 +21,6 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     getUserById: builder.query<User, string>({
       async queryFn(id: string) {
-        // const q = query(collection(db, "accounts"), where("userId", "==", id));
-        // getDocs(q).then((snapshot) => {
-        //   console.log(snapshot.docs[0].data());
-        // });
-
         try {
           const userRef = doc(db, "users", id);
           const userSnapshot = await getDoc(userRef);
@@ -36,7 +32,8 @@ export const userApi = createApi({
               email: userData.email,
               emailVerified: userData.emailVerified,
               image: userData.image,
-              name: userData.name,
+              firstName: userData.firstName,
+              lastName: userData.lastName,
             };
 
             return { data: user };
@@ -48,18 +45,7 @@ export const userApi = createApi({
         }
       },
     }),
-    deleteUserById: builder.mutation({
-      async queryFn(id) {
-        try {
-          const userRef = doc(db, "users", id);
-          await deleteDoc(userRef);
-          return { data: "ok" };
-        } catch (err: any) {
-          return { error: err.message };
-        }
-      },
-    }),
   }),
 });
 
-export const { useGetUserByIdQuery, useDeleteUserByIdMutation } = userApi;
+export const { useGetUserByIdQuery } = userApi;

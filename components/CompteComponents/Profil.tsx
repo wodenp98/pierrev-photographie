@@ -18,11 +18,15 @@ import { Label } from "../ui/label";
 import Image from "next/image";
 import Link from "next/link";
 import { UserAuth } from "@/lib/context/AuthContext";
-import { $CombinedState } from "@reduxjs/toolkit";
+import { useGetUserByIdQuery } from "@/lib/redux/services/usersApi";
 
-export default function Profil() {
-  const { user, logOut, deleteAccount } = UserAuth();
+export default function Profil({ userId }: { userId: string }) {
+  const { logOut, deleteAccount } = UserAuth();
+  const { data: user, isLoading, isError } = useGetUserByIdQuery(userId);
 
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
   const handleSignOut = async () => {
     try {
       await logOut();
@@ -44,8 +48,8 @@ export default function Profil() {
       <div className="flex items-end justify-end">
         <div className="relative">
           <Image
-            src={user.photoURL as string}
-            alt={user.displayName as string}
+            src={user?.image as string}
+            alt={user?.firstName as string}
             width={80}
             height={80}
             className="rounded-full object-cover"
@@ -57,7 +61,7 @@ export default function Profil() {
         </div>
       </div>
 
-      <div className="text-center my-4">Bonjour {user.displayName} !</div>
+      <div className="text-center my-4">Bonjour {user?.firstName} !</div>
       <Tabs defaultValue="informations" className="w-11/12">
         <TabsList
           className="grid w-full h-10 grid-cols-3"
@@ -76,11 +80,11 @@ export default function Profil() {
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label htmlFor="nom">Nom</Label>
-                {/* <Input id="nom" defaultValue={lastName} /> */}
+                <Input id="nom" defaultValue={user?.lastName} />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="prenom">Prénom</Label>
-                {/* <Input id="prenom" defaultValue={firstName} /> */}
+                <Input id="prenom" defaultValue={user?.firstName} />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="numero">Numéro</Label>
@@ -88,7 +92,7 @@ export default function Profil() {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="email">Email</Label>
-                {/* <Input id="email" defaultValue={email} /> */}
+                <Input id="email" defaultValue={user?.email} />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="password">Mot de passe</Label>
