@@ -15,6 +15,9 @@ type CartType = {
   prix: number;
   imageUrl: string;
   quantity: number;
+  format: string;
+  rendu: string;
+  impression: string;
 };
 export const cartApi = createApi({
   reducerPath: "cartApi",
