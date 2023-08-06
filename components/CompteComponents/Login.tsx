@@ -24,7 +24,7 @@ export default function Login() {
     try {
       await googleSignIn();
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 

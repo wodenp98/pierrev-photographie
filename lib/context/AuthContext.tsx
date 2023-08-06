@@ -12,7 +12,6 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
-import { redirect } from "next/navigation";
 
 const AuthContext = createContext<any>({});
 

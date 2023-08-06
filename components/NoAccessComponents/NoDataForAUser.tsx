@@ -9,16 +9,22 @@ import {
   CardFooter,
 } from "../ui/card";
 
-export default function NoDataForAUserWishlist() {
+export default function NoDataForAUserWishlist({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
   return (
     <section className="flex flex-col items-center mt-4">
-      <Card className="w-11/12">
+      <Card className="w-11/12 h-full">
         <CardHeader>
-          <CardTitle>Ma Wishlist</CardTitle>
+          <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="text-center">
-            <p>Vous n'avez pas d'article dans votre wishlist</p>
+            <p>Vous n'avez pas d'article dans votre {description}</p>
           </div>
         </CardContent>
         <CardFooter>

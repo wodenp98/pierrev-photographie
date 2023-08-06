@@ -1,6 +1,7 @@
 "use client";
-import NoDataForAUserWishlist from "@/components/WishlistComponents/NoDataForAUserWishlist";
-import NoUserWishlist from "@/components/WishlistComponents/NoUserWishlist";
+import Link from "next/link";
+import NoDataForAUserWishlist from "@/components/NoAccessComponents/NoDataForAUser";
+import NoUserWishlist from "@/components/NoAccessComponents/NoUser";
 import Image from "next/image";
 import { TbShoppingCartPlus } from "react-icons/tb";
 import { MdDeleteForever } from "react-icons/md";
@@ -17,19 +18,24 @@ import {
   useGetWishlistQuery,
   useDeleteToWishlistMutation,
 } from "@/lib/redux/services/wishlistApi";
-import Link from "next/link";
 
 export default function Wishlist() {
   const { user } = UserAuth();
   const { data, isError, isLoading } = useGetWishlistQuery(user?.uid);
-  console.log(data);
 
   if (!user) {
-    return <NoUserWishlist />;
+    return (
+      <NoUserWishlist
+        title="Ma Wishlist"
+        description="pouvoir créer une wishlist"
+      />
+    );
   }
 
   if (data?.length === 0) {
-    return <NoDataForAUserWishlist />;
+    return (
+      <NoDataForAUserWishlist title="Ma Wishlist" description="wishlist" />
+    );
   }
 
   if (isLoading) {
@@ -54,33 +60,32 @@ export default function Wishlist() {
           </CardHeader>
           <CardContent className="flex flex-col">
             {data?.map((item) => (
-              <div key={item.id} className="flex mb-2">
-                <div className="relative mr-4 ">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.nom}
-                    width={120}
-                    height={80}
-                    className="object-cover w-[100px] h-[80px]"
-                  />
-                  <MdDeleteForever className="font-bold  text-red-500 absolute top-[-4px] right-[-6px]" />
+              <Link key={item.id} href={`/boutique/${item.id}`}>
+                <div className="flex justify-around mb-2">
+                  <div className="mr-4 ">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.nom}
+                      width={120}
+                      height={80}
+                      className="object-cover w-[100px] h-[80px]"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-between flex-wrap w-2/5 mr-6">
+                    <h2 className="text-sm">{item.nom}</h2>
+                    <p className="text-sm text-gray-500">{item.prix} €</p>
+                  </div>
+                  <div className="flex items-end">
+                    <MdDeleteForever className="font-bold text-xl  text-red-500" />
+                  </div>
                 </div>
-                <div className="flex flex-col justify-between flex-wrap w-2/5 mr-6">
-                  <h2 className="text-sm">{item.nom}</h2>
-                  <p className="text-sm text-gray-500">{item.prix} €</p>
-                </div>
-                <div className="flex items-end ">
-                  <button className="flex items-center justify-center  bg-lightBlack rounded-md h-8 w-8 text-xl text-white">
-                    <TbShoppingCartPlus />
-                  </button>
-                </div>
-              </div>
+              </Link>
             ))}
           </CardContent>
           <CardFooter>
-            {/* <Link href="/boutique">
+            <Link href="/boutique">
               <Button className="bg-lightBlack text-white">Boutique</Button>
-            </Link> */}
+            </Link>
           </CardFooter>
         </Card>
       </section>

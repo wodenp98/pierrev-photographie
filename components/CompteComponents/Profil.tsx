@@ -31,7 +31,7 @@ export default function Profil({ userId }: { userId: string }) {
     try {
       await logOut();
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 
@@ -39,7 +39,7 @@ export default function Profil({ userId }: { userId: string }) {
     try {
       await deleteAccount();
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 

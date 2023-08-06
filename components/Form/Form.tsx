@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { UserAuth } from "@/lib/context/AuthContext";
+import { useAddToCartMutation } from "@/lib/redux/services/cartApi";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { AccordionShop } from "../Accordion/Accordion";
+import { useRouter } from "next/navigation";
+import { toast } from "../ui/use-toast";
 
 type FormValues = {
   [key: string]: string;
@@ -9,24 +13,6 @@ type FormValues = {
   rendu: string;
   impression: string;
 };
-
-// const prices: Record<string, Record<string, number>> = {
-//   format: {
-//     "30*45 cm": 150,
-//     "60*40 cm": 200,
-//     "90*60 cm": 250,
-//     "100*70 cm": 300,
-//   },
-//   rendu: {
-//     Mat: 10,
-//     Satiné: 20,
-//   },
-//   impression: {
-//     Subligraphie: -5,
-//     "Fine Art seul": -10,
-//     "Alu Dibond": 5,
-//   },
-// };
 
 const prices: Record<string, Record<string, number>> = {
   format: {
@@ -82,12 +68,12 @@ const SelectInput: React.FC<{
 };
 
 export const ShopForm = ({ product }: any) => {
+  const { user } = UserAuth();
+  const router = useRouter();
+  const [addToCart] = useAddToCartMutation();
   const {
     register,
     handleSubmit,
-    control,
-    watch,
-    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -116,13 +102,28 @@ export const ShopForm = ({ product }: any) => {
 
   const price = getPrice(formValues);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = () => {
+    // si pas d'user il faut se connecter
+    // open modal avec possibilité de se connecter
+    if (!user) {
+      return router.push("/compte");
+    }
+
     const productToCart = {
-      ...product,
-      ...data,
-      price,
+      id: product.id,
+      nom: product.nom,
+      price: price,
+      imageUrl: product.imageUrl,
+      format: formValues.format,
+      rendu: formValues.rendu,
+      impression: formValues.impression,
     };
-    console.log(productToCart);
+    addToCart({ userId: user.uid, cart: productToCart });
+    toast({
+      className: "bg-green-500 text-white",
+      title: `${product.nom} a été ajouté à votre panier`,
+      duration: 3000,
+    });
   };
 
   return (
@@ -161,7 +162,7 @@ export const ShopForm = ({ product }: any) => {
           }}
           register={register}
         />
-        <div className="mt-2 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <button
             type="submit"
             className="uppercase bg-lightBlack text-lg text-white  py-2 px-4 "

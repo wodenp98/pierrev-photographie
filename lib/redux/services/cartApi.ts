@@ -9,12 +9,11 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../lib/firebase/index";
 
-type CartType = {
+export type CartType = {
   id: string;
   nom: string;
-  prix: number;
+  price: number;
   imageUrl: string;
-  quantity: number;
   format: string;
   rendu: string;
   impression: string;

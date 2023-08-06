@@ -8,16 +8,22 @@ import {
   CardTitle,
 } from "../ui/card";
 
-export default function NoUserWishlist() {
+export default function NoUserWishlist({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
   return (
-    <section className="flex flex-col items-center mt-4">
+    <section className="flex flex-col items-center mt-4 ">
       <Card className="w-11/12">
         <CardHeader>
-          <CardTitle>Ma Wishlist</CardTitle>
+          <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="text-center">
-            <p>Vous devez avoir un compte pour pouvoir créer une wishlist</p>
+            <p>Vous devez avoir un compte pour {description}</p>
           </div>
         </CardContent>
         <CardFooter>

@@ -5,6 +5,7 @@ import { Providers } from "../../lib/redux/provider";
 import NavbarHomePage from "../../components/Navbars/NavbarHomePage";
 import Footer from "../../components/Footer/Footer";
 import { AuthContextProvider } from "@/lib/context/AuthContext";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default async function RootLayout({
           <AuthContextProvider>
             <NavbarHomePage />
             {children}
+            <Toaster />
             <Footer />
           </AuthContextProvider>
         </Providers>
