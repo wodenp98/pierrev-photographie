@@ -14,10 +14,9 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { UserAuth } from "@/lib/context/AuthContext";
-import {
-  useGetWishlistQuery,
-  useDeleteToWishlistMutation,
-} from "@/lib/redux/services/wishlistApi";
+import { useGetWishlistQuery } from "@/lib/redux/services/wishlistApi";
+
+import WishlistItem from "@/components/Wishlist/WishlistItem";
 
 export default function Wishlist() {
   const { user } = UserAuth();
@@ -61,24 +60,7 @@ export default function Wishlist() {
           <CardContent className="flex flex-col">
             {data?.map((item) => (
               <Link key={item.id} href={`/boutique/${item.id}`}>
-                <div className="flex justify-around mb-2">
-                  <div className="mr-4 ">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.nom}
-                      width={120}
-                      height={80}
-                      className="object-cover w-[100px] h-[80px]"
-                    />
-                  </div>
-                  <div className="flex flex-col justify-between flex-wrap w-2/5 mr-6">
-                    <h2 className="text-sm">{item.nom}</h2>
-                    <p className="text-sm text-gray-500">{item.prix} €</p>
-                  </div>
-                  <div className="flex items-end">
-                    <MdDeleteForever className="font-bold text-xl  text-red-500" />
-                  </div>
-                </div>
+                <WishlistItem item={item} userId={user?.uid} />
               </Link>
             ))}
           </CardContent>
@@ -91,20 +73,4 @@ export default function Wishlist() {
       </section>
     </main>
   );
-}
-
-{
-  /* <div className="flex flex-col  ">
-<h2 className="text-base">{item.nom}</h2>
-<p className="text-sm text-gray-500">{item.prix} €</p>
-</div>
-
-<div className="flex flex-col justify-between items-end">
-<Button className="bg-lightBlack text-white w-auto h-auto">
-  <TbShoppingCartPlus />
-</Button>
-<Button className="bg-red-600 text-white w-auto h-auto">
-  <MdDeleteForever />
-</Button>
-</div> */
 }
