@@ -13,6 +13,7 @@ export default function Wishlist({
   const [deleteToWishlist] = useDeleteToWishlistMutation();
   const handleDeleteToWishlist = () => {
     deleteToWishlist({ userId, product: item });
+
     toast({
       className: "bg-red-500 text-white",
       title: `${item.nom} a été retiré de votre wishlist`,

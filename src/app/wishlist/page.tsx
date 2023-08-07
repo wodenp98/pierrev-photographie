@@ -15,12 +15,14 @@ import {
 } from "@/components/ui/card";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { useGetWishlistQuery } from "@/lib/redux/services/wishlistApi";
-
+import { useDeleteToWishlistMutation } from "@/lib/redux/services/wishlistApi";
 import WishlistItem from "@/components/Wishlist/WishlistItem";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Wishlist() {
   const { user } = UserAuth();
-  const { data, isError, isLoading } = useGetWishlistQuery(user?.uid);
+  const getWishlistQuery = useGetWishlistQuery(user?.uid);
+  const [deleteToWishlist] = useDeleteToWishlistMutation();
 
   if (!user) {
     return (
@@ -31,19 +33,23 @@ export default function Wishlist() {
     );
   }
 
-  if (data?.length === 0) {
+  if (getWishlistQuery.data?.length === 0) {
     return (
       <NoDataForAUserWishlist title="Ma Wishlist" description="wishlist" />
     );
   }
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const handleDeleteFromWishlist = (item: any) => {
+    deleteToWishlist({ userId: user?.uid, product: item });
+    getWishlistQuery.refetch();
+    toast({
+      className: "bg-red-500 text-white",
+      title: `${item.nom} a été retiré de votre wishlist`,
+      duration: 3000,
+    });
+  };
 
-  if (isError) {
-    return <div>Error fetching Carousel items.</div>;
-  }
+  const getWishlist = getWishlistQuery.data;
 
   return (
     <main>
@@ -58,9 +64,12 @@ export default function Wishlist() {
             <CardTitle>Ma Wishlist</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col">
-            {data?.map((item) => (
+            {getWishlist?.map((item) => (
               <Link key={item.id} href={`/boutique/${item.id}`}>
                 <WishlistItem item={item} userId={user?.uid} />
+                <button onClick={() => handleDeleteFromWishlist(item)}>
+                  Supprimer
+                </button>
               </Link>
             ))}
           </CardContent>

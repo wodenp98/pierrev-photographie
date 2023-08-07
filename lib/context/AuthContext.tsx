@@ -12,47 +12,53 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext<any>({});
 
 export const AuthContextProvider = ({ children }: any) => {
   const [user, setUser] = useState<any>(null);
+  const router = useRouter();
 
-  const googleSignIn = () => {
+  const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
-    signInWithRedirect(auth, provider);
+    await signInWithRedirect(auth, provider);
+    await getRedirectResult(auth).then((result) => {
+      if (result?.user) {
+        setDoc(doc(db, "users", result.user.uid), {
+          id: result.user.uid,
+          email: result.user.email,
+          emailVerified: result.user.emailVerified,
+          image: result.user.photoURL,
+          firstName: result.user.displayName?.split(" ")[0],
+          lastName: result.user.displayName?.split(" ")[1],
+        }).then(() => {
+          router.push("/");
+        });
+      }
+    });
   };
 
   const deleteAccount = async () => {
     await deleteUser(user).then(() => {
       deleteDoc(doc(db, "users", user.uid));
+      router.push("/login");
     });
   };
 
   const logOut = () => {
     setUser(null);
-    signOut(auth);
+    signOut(auth).then(() => {
+      router.push("/login");
+    });
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-
-      if (currentUser) {
-        setDoc(doc(db, "users", currentUser.uid), {
-          id: currentUser.uid,
-          email: currentUser.email,
-          emailVerified: currentUser.emailVerified,
-          image: currentUser.photoURL,
-          firstName: currentUser?.displayName?.split(" ")[0],
-          lastName: currentUser.displayName?.split(" ")[1],
-        });
-      } else {
-        setUser(null);
-      }
     });
     return () => unsubscribe();
-  }, [user]);
+  }, []);
 
   return (
     <AuthContext.Provider

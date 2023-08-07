@@ -24,10 +24,12 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const { data, isError, isLoading } = useGetBoutiqueItemByIdQuery(id);
-  const { data: userWishlist } = useGetWishlistQuery(user?.uid);
+  const getWishlistQuery = useGetWishlistQuery(user?.uid);
   const [deleteToWishlist] = useDeleteToWishlistMutation();
   const [addToWishlist] = useAddToWishlistMutation();
   const [isLiked, setIsLiked] = useState(false);
+
+  const userWishlist = getWishlistQuery.data;
 
   useEffect(() => {
     if (userWishlist) {
@@ -53,6 +55,7 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
           userId: user.uid,
           product,
         });
+        getWishlistQuery.refetch();
         setIsLiked(false);
         toast({
           className: "bg-red-500 text-white",
@@ -64,6 +67,8 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
           userId: user.uid,
           product,
         });
+
+        getWishlistQuery.refetch();
         setIsLiked(true);
         toast({
           className: "bg-green-500 text-white",
