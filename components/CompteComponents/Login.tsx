@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "../ui/button";
 import {
@@ -14,18 +14,140 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-
 import { UserAuth } from "@/lib/context/AuthContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { toast } from "../ui/use-toast";
+import { redirect, useRouter } from "next/navigation";
+
+const profileFormSchema = z
+  .object({
+    firstName: z
+      .string()
+      .nonempty("Field is required")
+      .regex(/[a-zA-Z]/, {
+        message: "Must be a valid first name",
+      }),
+    lastName: z
+      .string()
+      .nonempty("Field is required")
+      .regex(/[a-zA-Z]/, {
+        message: "Must be a valid last name",
+      }),
+    email: z
+      .string()
+      .nonempty("Field is required")
+      .email({ message: "Must be a valid email" }),
+    password: z
+      .string()
+      .refine(
+        (value) =>
+          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[`~<>?,./!@#$%^&*()\[\];:\\-_+="'|{}]).{8,}$/.test(
+            value
+          ),
+        {
+          message: ` Must contain at least 8 characters, one uppercase, one lowercase, one number and one special character`,
+        }
+      ),
+
+    confirmPassword: z
+      .string()
+      .refine(
+        (value) =>
+          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[`~<>?,./!@#$%^&*()\[\];:\\-_+="'|{}]).{8,}$/.test(
+            value
+          ),
+        {
+          message: ` Must contain at least 8 characters, one uppercase, one lowercase, one number and one special character`,
+        }
+      ),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password doesn't match",
+    path: ["confirmpassword"],
+  });
+
+type ProfileFormValues = z.infer<typeof profileFormSchema>;
+
+const loginFormSchema = z.object({
+  email: z
+    .string()
+    .nonempty("Field is required")
+    .email({ message: "Must be a valid email" }),
+  password: z
+    .string()
+    .refine(
+      (value) =>
+        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[`~<>?,./!@#$%^&*()\[\];:\\-_+="'|{}]).{8,}$/.test(
+          value
+        ),
+      {
+        message: ` Must contain at least 8 characters, one uppercase, one lowercase, one number and one special character`,
+      }
+    ),
+});
+
+type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function Login() {
-  const { googleSignIn } = UserAuth();
+  const { createUser, googleSignIn, signIn } = UserAuth();
+  const router = useRouter();
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    mode: "onChange",
+  });
 
-  const handleSignIn = async () => {
+  const loginForm = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: "onChange",
+  });
+
+  // faire deux formulaires distincts
+
+  const onSubmit = async (data: ProfileFormValues) => {
     try {
-      await googleSignIn();
+      await createUser(
+        data.email,
+        data.password,
+        data.firstName,
+        data.lastName
+      );
+      toast({
+        className: "bg-green-500 text-white",
+        title: "User created",
+        duration: 3000,
+      });
     } catch (error) {
-      throw error;
+      console.error(error);
     }
+  };
+
+  const onSubmitLogin = async (data: LoginFormValues) => {
+    await signIn(data.email, data.password);
+  };
+
+  const handleSignIn = () => {
+    googleSignIn();
   };
 
   return (
@@ -44,14 +166,47 @@ export default function Login() {
               <CardTitle>Login</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" defaultValue="email" />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" defaultValue="password" />
-              </div>
+              <Form {...form}>
+                <form
+                  onSubmit={loginForm.handleSubmit(onSubmitLogin)}
+                  className="space-y-4 mb-8"
+                >
+                  <FormField
+                    control={loginForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="shadcn" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={loginForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mot de passe</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="shadcn"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button className="bg-lightBlack w-full text-white">
+                    Save changes
+                  </Button>
+                </form>
+              </Form>
               <div className="flex items-center justify-center">
                 <div className="w-20 h-0.5 bg-gray-300 mr-2"></div>
                 <div className="text-md">Ou avec</div>
@@ -77,35 +232,101 @@ export default function Login() {
               <CardTitle>Create Account</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <Label htmlFor="nom">Nom</Label>
-                <Input id="nom" defaultValue="nom" />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="prenom">Prénom</Label>
-                <Input id="prenom" defaultValue="prenom" />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" defaultValue="email" />
-              </div>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4 mb-8"
+                >
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Prénom</FormLabel>
+                        <FormControl>
+                          <Input placeholder="shadcn" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom</FormLabel>
+                        <FormControl>
+                          <Input placeholder="shadcn" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="shadcn" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mot de passe</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="shadcn"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirmez votre mot de passe</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="shadcn"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-600" />
+                      </FormItem>
+                    )}
+                  />
 
-              <div className="space-y-1">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" defaultValue="password" />
-              </div>
-              <div className="flex items-center justify-center">
+                  <Button className="bg-lightBlack w-full text-white">
+                    Save changes
+                  </Button>
+                </form>
+              </Form>
+              <div className="flex items-center justify-center ">
                 <div className="w-20 h-0.5 bg-gray-300 mr-2"></div>
                 <div className="text-md">Ou avec</div>
                 <div className="w-20 h-0.5 bg-gray-300 ml-2"></div>
               </div>
+            </CardContent>
+            <CardFooter>
               <Button variant="outline" className="w-full">
                 <FcGoogle className="mr-2 h-4 w-4" />
                 Google
               </Button>
-            </CardContent>
-            <CardFooter>
-              <Button className="bg-lightBlack text-white">Save changes</Button>
             </CardFooter>
           </Card>
         </TabsContent>

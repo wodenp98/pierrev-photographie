@@ -16,7 +16,7 @@ export default function Compte() {
       </ul>
       <h1 className="ml-6 mt-6 text-4xl">Compte</h1>
 
-      {user ? <Profil userId={user.uid} /> : <Login />}
+      {user ? <Profil userId={user?.uid} /> : <Login />}
     </main>
   );
 }
