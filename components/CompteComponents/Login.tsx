@@ -4,6 +4,7 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "../ui/button";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -13,7 +14,6 @@ import {
 } from "../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -166,7 +166,7 @@ export default function Login() {
               <CardTitle>Login</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Form {...form}>
+              <Form {...loginForm}>
                 <form
                   onSubmit={loginForm.handleSubmit(onSubmitLogin)}
                   className="space-y-4 mb-8"
@@ -201,7 +201,11 @@ export default function Login() {
                       </FormItem>
                     )}
                   />
-
+                  <Link href="/forgotpassword">
+                    <p className="text-xs text-gray-600 underline cursor-pointer mt-4">
+                      Mot de passe oublié?
+                    </p>
+                  </Link>
                   <Button className="bg-lightBlack w-full text-white">
                     Save changes
                   </Button>
@@ -221,9 +225,6 @@ export default function Login() {
                 Google
               </Button>
             </CardContent>
-            <CardFooter>
-              <Button className="bg-lightBlack text-white">Save changes</Button>
-            </CardFooter>
           </Card>
         </TabsContent>
         <TabsContent value="createaccount">

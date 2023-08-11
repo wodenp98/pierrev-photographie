@@ -20,6 +20,7 @@ import Link from "next/link";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { useGetUserByIdQuery } from "@/lib/redux/services/usersApi";
 import { useGetWishlistQuery } from "@/lib/redux/services/wishlistApi";
+import ProfilForm from "./ProfilForm";
 
 export default function Profil({ userId }: { userId: string }) {
   const { logOut, deleteAccount } = UserAuth();
@@ -76,27 +77,16 @@ export default function Profil({ userId }: { userId: string }) {
         </TabsList>
         <TabsContent value="informations">
           <Card>
-            <CardHeader className="flex justify-between">
-              <CardTitle>Informations personnelles</CardTitle>
+            <CardHeader className="flex flex-col">
+              <CardTitle>Informations Personnelles</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <Label htmlFor="nom">Nom</Label>
-                <Input id="nom" defaultValue={data?.lastName} />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="prenom">Prénom</Label>
-                <Input id="prenom" defaultValue={data?.firstName} />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" defaultValue={data?.email} />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="password">Mot de passe</Label>
-                <Input id="password" type="password" defaultValue="password" />
-              </div>
-            </CardContent>
+
+            <ProfilForm
+              defaultLastName={data?.lastName}
+              defaultEmail={data?.email}
+              defaultFirstName={data?.firstName}
+            />
+
             <CardFooter>
               <Button
                 className="bg-red-600 text-white"
@@ -132,7 +122,6 @@ export default function Profil({ userId }: { userId: string }) {
               <CardTitle>Wishlist</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {/* data? aucune wishlist : la wishlist */}
               {getWishlistQuery.data?.length === 0 ? (
                 <div className="flex flex-col items-center">
                   <p>Vous n'avez pas de wishlist!</p>

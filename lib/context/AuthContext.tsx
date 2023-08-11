@@ -8,19 +8,18 @@ import {
   signInWithRedirect,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   updateProfile,
   deleteUser,
   signInWithPopup,
 } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
-import { useRouter } from "next/navigation";
 
 const AuthContext = createContext<any>({});
 
 export const AuthContextProvider = ({ children }: any) => {
   const [user, setUser] = useState<any>(null);
-  const router = useRouter();
 
   const createUser = async (
     email: string,
@@ -83,6 +82,14 @@ export const AuthContextProvider = ({ children }: any) => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      console.error("Failed to reset password:", error);
+    }
+  };
+
   const deleteAccount = async () => {
     try {
       if (user) {
@@ -108,20 +115,6 @@ export const AuthContextProvider = ({ children }: any) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       console.log("secondUser", currentUser);
-      // if (currentUser) {
-      //   try {
-      //     setDoc(doc(db, "users", currentUser.uid), {
-      //       firstName: currentUser.displayName?.split(" ")[0],
-      //       lastName: currentUser.displayName?.split(" ")[1],
-      //       email: currentUser.email,
-      //       image: currentUser.photoURL,
-      //       uid: currentUser.uid,
-      //       emailVerified: currentUser.emailVerified,
-      //     });
-      //   } catch (error) {
-      //     console.error("Failed to update user data:", error);
-      //   }
-      // }
     });
     return () => unsubscribe();
   }, []);
@@ -132,6 +125,7 @@ export const AuthContextProvider = ({ children }: any) => {
         user,
         createUser,
         signIn,
+        resetPassword,
         googleSignIn,
         logOut,
         deleteAccount,
