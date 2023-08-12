@@ -81,11 +81,7 @@ export default function Profil({ userId }: { userId: string }) {
               <CardTitle>Informations Personnelles</CardTitle>
             </CardHeader>
 
-            <ProfilForm
-              defaultLastName={data?.lastName}
-              defaultEmail={data?.email}
-              defaultFirstName={data?.firstName}
-            />
+            <ProfilForm userId={userId} />
 
             <CardFooter>
               <Button
