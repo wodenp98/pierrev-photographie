@@ -5,7 +5,6 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithRedirect,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -15,6 +14,7 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { toast } from "@/components/ui/use-toast";
 
 const AuthContext = createContext<any>({});
 
@@ -95,10 +95,19 @@ export const AuthContextProvider = ({ children }: any) => {
       if (user) {
         await deleteUser(user).then(() => {
           deleteDoc(doc(db, "users", user.uid));
+          toast({
+            className: "bg-red-500 text-white",
+            title: "Votre compte a été supprimé",
+            duration: 3000,
+          });
         });
       }
-    } catch (error) {
-      console.error("Failed to delete account:", error);
+    } catch (error: any) {
+      toast({
+        className: "bg-red-500 text-white",
+        title: `Impossible de supprimer votre compte car ${error.message.toString()}`,
+        duration: 4000,
+      });
     }
   };
 

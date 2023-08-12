@@ -20,10 +20,15 @@ export function GenericForm(props: any) {
     setIsEditMode(!isEditMode);
   };
 
+  const handleFormSubmit = (data: any) => {
+    props.onSubmit(data);
+    setIsEditMode(false);
+  };
+
   return (
     <Form {...props.form}>
       <form
-        onSubmit={props.form.handleSubmit(props.onSubmit)}
+        onSubmit={props.form.handleSubmit(handleFormSubmit)}
         className="space-y-4"
       >
         <FormField
@@ -44,21 +49,18 @@ export function GenericForm(props: any) {
                   {isEditMode ? (
                     <>
                       <Button
-                        className="bg-red-600 w-1/3 text-white"
+                        className="w-2/12 text-red-600"
                         onClick={toggleEditMode}
                       >
                         <MdOutlineCancel />
                       </Button>
-                      <Button
-                        className="bg-green-500 w-1/3 text-white"
-                        type="submit"
-                      >
+                      <Button className=" w-2/12 text-green-600" type="submit">
                         <BsCheck2Circle />
                       </Button>
                     </>
                   ) : (
                     <Button
-                      className="bg-lightBlack w-1/3 text-white"
+                      className=" w-2/12 text-lightBlack"
                       onClick={toggleEditMode}
                     >
                       <BsPencil />

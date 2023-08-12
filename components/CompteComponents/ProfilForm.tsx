@@ -1,7 +1,5 @@
 "use client";
 
-import { BsPencil } from "react-icons/bs";
-import { MdOutlineCancel } from "react-icons/md";
 import { CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { UserAuth } from "@/lib/context/AuthContext";
@@ -57,7 +55,7 @@ export default function ProfilForm({ userId }: { userId: string }) {
   });
 
   const onSubmitEmailUpdate = async (data: EmailUpdateFormValues) => {
-    console.log(data);
+    console.log("email", data);
   };
 
   const onSubmitLastNameUpdate = async (data: LastNameUpdateFormValues) => {
