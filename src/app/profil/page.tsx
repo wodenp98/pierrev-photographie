@@ -20,6 +20,7 @@ import EmailFormProfil from "@/components/CompteComponents/EmailFormProfil";
 import FirstNameFormProfil from "@/components/CompteComponents/FirstNameFormProfil";
 import LastNameFormProfil from "@/components/CompteComponents/LastNameFormProfil";
 import PasswordFormProfil from "@/components/CompteComponents/PasswordFormProfil";
+import DeleteFormProfil from "@/components/CompteComponents/DeleteFormProfil";
 
 export default function Profil() {
   const router = useRouter();
@@ -94,14 +95,8 @@ export default function Profil() {
                 <PasswordFormProfil userId={user?.uid} />
               )}
             </CardContent>
-
             <CardFooter>
-              <Button
-                className="bg-red-600 text-white"
-                onClick={handleDeleteAccount}
-              >
-                Supprimer votre profil
-              </Button>
+              <DeleteFormProfil userId={user?.uid} />
             </CardFooter>
           </Card>
         </TabsContent>

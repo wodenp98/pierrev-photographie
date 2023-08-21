@@ -212,11 +212,7 @@ export const AuthContextProvider = ({ children }: any) => {
         });
       }
     } catch (error: any) {
-      toast({
-        className: "bg-red-500 text-white",
-        title: `Impossible de supprimer votre compte car ${error.message.toString()}`,
-        duration: 4000,
-      });
+      console.error("Failed to delete account:", error);
     }
   };
 
@@ -232,21 +228,6 @@ export const AuthContextProvider = ({ children }: any) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-
-      const user = auth.currentUser;
-      console.log(user);
-
-      if (user?.metadata.lastSignInTime) {
-        const lastSignInTime = new Date(user?.metadata.lastSignInTime);
-        const now = new Date();
-
-        const diff = now.getTime() - lastSignInTime.getTime();
-        const diffInDays = diff / (1000 * 60 * 60 * 24);
-
-        if (diffInDays > 3) {
-          signOut(auth);
-        }
-      }
     });
 
     return () => unsubscribe();

@@ -37,7 +37,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`flex items-center justify-between w-full bg-white z-50 ${
+      className={`flex items-center justify-between w-full h-[97.5px] bg-white z-50 ${
         isOpen ? "overflow-hidden" : ""
       }`}
     >
@@ -51,13 +51,15 @@ export default function Navbar() {
         />
       </div>
       <Link href="/" onClick={closeMenu}>
-        <Image
-          src="/logo-home-pierre-photographie.png"
-          alt="Logo"
-          width={130}
-          height={100}
-          priority={true}
-        />
+        <div style={{ width: "130px", height: "130px", position: "relative" }}>
+          <Image
+            src="/logo-home-pierre-photographie.png"
+            alt="Logo"
+            width={130}
+            height={130}
+            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          />
+        </div>
       </Link>
       <div className="p-4">
         <Link href="/panier" onClick={closeMenu}>
@@ -69,7 +71,9 @@ export default function Navbar() {
       </div>
       {isOpen && (
         <div
-          className={`fixed flex items-center justify-center top-[97.5px] left-0 right-0 bottom-0 bg-white `}
+          className={`fixed flex items-center justify-center top-[97.5px] left-0 right-0 bottom-0 bg-white ${
+            isOpen ? "w-full" : "w-1/5 md:w-2/5 lg:w-1/5"
+          }`}
         >
           <div className="absolute top-0 w-4/5">
             <div className="h-[1px] bg-gray-400 mx-auto my-4"></div>

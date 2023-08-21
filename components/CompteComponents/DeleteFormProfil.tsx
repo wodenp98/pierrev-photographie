@@ -47,9 +47,14 @@ import {
 import { DialogHeader, DialogFooter } from "../ui/dialog";
 import { Label } from "@/components/ui/label";
 
-export default function EmailFormProfil({ userId }: { userId: string }) {
-  const { user, updateEmailUser, reauthenticateWithGoogle, reauthenticate } =
-    UserAuth();
+export default function DeleteFormProfil({ userId }: { userId: string }) {
+  const {
+    user,
+    updateEmailUser,
+    reauthenticateWithGoogle,
+    reauthenticate,
+    deleteAccount,
+  } = UserAuth();
   const getUser = useGetUserByIdQuery(userId);
   const data = getUser.data;
   const [isEditMode, setIsEditMode] = useState(false);
@@ -57,14 +62,6 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
 
   const lastSignInTimestamp =
     Date.now() - new Date(user?.metadata.lastSignInTime).getTime();
-
-  const emailForm = useForm<EmailUpdateFormValues>({
-    resolver: zodResolver(emailUpdateFormSchema),
-    defaultValues: {
-      email: data?.email,
-    },
-    mode: "onChange",
-  });
 
   const passwordForm = useForm<PasswordUpdateFormValues>({
     resolver: zodResolver(passwordUpdateFormSchema),
@@ -74,90 +71,25 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
     mode: "onChange",
   });
 
-  // si provider = google on peut pas modifier l'email
-
-  const onSubmitLogin = async (data: EmailUpdateFormValues) => {
-    if (data.email !== user?.email) {
-      if (lastSignInTimestamp <= 60 * 60 * 1000) {
-        console.log("oui");
-        // Directly update email without showing modal
-        await updateEmailUser(data.email).then(() => {
-          getUser.refetch();
-        });
-
-        setIsEditMode(false);
-      }
-
-      setIsPasswordModalOpen(true);
-    } else {
-      console.log("error");
+  const handleDeleteAccount = async () => {
+    if (lastSignInTimestamp < 60 * 60 * 1000) {
+      await deleteAccount();
     }
+    setIsPasswordModalOpen(true);
   };
 
-  // reproduire comme pour le email
   const handlePasswordModalSubmit = async (data: PasswordUpdateFormValues) => {
     const credential = EmailAuthProvider.credential(user?.email, data.password);
     await reauthenticate(credential);
-
-    await updateEmailUser(emailForm.getValues("email")).then(() => {
-      getUser.refetch();
-    });
-
-    setIsEditMode(false);
+    await deleteAccount();
     setIsPasswordModalOpen(false);
   };
 
-  const toggleEditMode = () => {
-    setIsEditMode(!isEditMode);
-  };
-
   return (
-    <Form {...emailForm}>
-      <form
-        onSubmit={emailForm.handleSubmit(onSubmitLogin)}
-        className="space-y-4"
-      >
-        <FormField
-          control={emailForm.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <div className="flex">
-                  <Input
-                    className="w-10/12"
-                    placeholder={data?.email}
-                    {...field}
-                    disabled={!isEditMode}
-                  />
-                  {isEditMode ? (
-                    <>
-                      <Button
-                        className="w-2/12 text-red-600"
-                        onClick={toggleEditMode}
-                      >
-                        <MdOutlineCancel />
-                      </Button>
-                      <Button className=" w-2/12 text-green-600" type="submit">
-                        <BsCheck2Circle />
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      className=" w-2/12 text-lightBlack"
-                      onClick={toggleEditMode}
-                    >
-                      <BsPencil />
-                    </Button>
-                  )}
-                </div>
-              </FormControl>
-              <FormMessage className="text-red-600" />
-            </FormItem>
-          )}
-        />
-      </form>
+    <>
+      <Button className="bg-red-600 text-white" onClick={handleDeleteAccount}>
+        Supprimer votre profil
+      </Button>
 
       <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
         <DialogContent>
@@ -195,6 +127,6 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
           </Form>
         </DialogContent>
       </Dialog>
-    </Form>
+    </>
   );
 }

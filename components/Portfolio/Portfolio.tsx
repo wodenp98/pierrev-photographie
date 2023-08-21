@@ -25,8 +25,8 @@ export default function PhotographComponent() {
         Découvrez mon travail
       </h2>
 
-      <div className="flex items-center flex-col  bg-white h-5/6">
-        <div className="grid grid-cols-2 gap-4 mt-6 p-4">
+      <div className="flex items-center flex-col bg-white h-5/6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 p-4">
           <PortfolioImageComponents
             src="/assets/portfolioAssets/cascade.jpg"
             alt="Cascade"
@@ -66,7 +66,7 @@ export default function PhotographComponent() {
         </div>
         <div className="w-full flex justify-center p-4 z-10">
           <Link href="/boutique">
-            <button className="bg-lightBlue rounded-lg text-xl text-black  py-2 px-4 ">
+            <button className="bg-lightBlue rounded-lg text-xl text-black py-2 px-4">
               VOIR PLUS
             </button>
           </Link>

@@ -40,6 +40,7 @@ export default function Carousel() {
                 alt={slide.nom}
                 fill={true}
                 object-fit="cover"
+                priority={true}
               />
             </div>
           </SwiperSlide>

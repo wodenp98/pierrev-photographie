@@ -8,12 +8,17 @@ export default function Footer() {
     <footer className="bg-lightBlack mt-5">
       <div className="flex justify-center">
         <Link href="/">
-          <Image
-            src="/logo-footer-pierre-photographie.jpg"
-            alt="Logo Pierre Photographie"
-            width={150}
-            height={150}
-          />
+          <div
+            style={{ width: "150px", height: "150px", position: "relative" }}
+          >
+            <Image
+              src="/logo-footer-pierre-photographie.jpg"
+              alt="Logo"
+              width={130}
+              height={130}
+              style={{ width: "100%", height: "100%", objectFit: "contain" }}
+            />
+          </div>
         </Link>
       </div>
 
