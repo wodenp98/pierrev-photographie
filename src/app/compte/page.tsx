@@ -1,11 +1,14 @@
 "use client";
 
-import Profil from "@/components/CompteComponents/Profil";
+// import Profil from "@/components/CompteComponents/Profil";
 import Login from "@/components/CompteComponents/Login";
 import { UserAuth } from "@/lib/context/AuthContext";
+import { redirect } from "next/navigation";
 
 export default function Compte() {
   const { user } = UserAuth();
+
+  // refaire cette page
 
   return (
     <main>
@@ -16,7 +19,7 @@ export default function Compte() {
       </ul>
       <h1 className="ml-6 mt-6 text-4xl">Compte</h1>
 
-      {user ? <Profil userId={user?.uid} /> : <Login />}
+      {!user ? <Login /> : redirect("/profil")}
     </main>
   );
 }

@@ -110,15 +110,6 @@ export default function Navbar() {
             </Link>
             <div className="h-[1px] bg-gray-400 mx-auto my-4"></div>
             <Link
-              href="/wishlist"
-              className="uppercase flex items-center justify-between"
-              onClick={closeMenu}
-            >
-              Wishlist
-              <AiOutlineHeart className="w-[20px] h-[20px]" />
-            </Link>
-            <div className="h-[1px] bg-gray-400 mx-auto my-4"></div>
-            <Link
               href="/compte"
               className="uppercase flex items-center justify-between"
               onClick={closeMenu}

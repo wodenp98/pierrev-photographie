@@ -1,51 +1,71 @@
-"use client";
-import { BsCheck2Circle, BsPencil } from "react-icons/bs";
-import { Button } from "@/components/ui/button";
+import { Input } from "../ui/input";
+import { UserAuth } from "@/lib/context/AuthContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import {
+  PasswordUpdateFormValues,
+  passwordUpdateFormSchema,
+} from "./ProfilTypes";
+import { BsCheck2Circle, BsPencil } from "react-icons/bs";
 import { MdOutlineCancel } from "react-icons/md";
+import { Button } from "../ui/button";
+import { useGetUserByIdQuery } from "@/lib/redux/services/usersApi";
 import { useState } from "react";
 
-export function GenericForm(props: any) {
+export default function PasswordFormProfil({ userId }: { userId: string }) {
+  const { user, updatePasswordUser } = UserAuth();
+  const getUser = useGetUserByIdQuery(userId);
+  const data = getUser.data;
+
+  const emailForm = useForm<PasswordUpdateFormValues>({
+    resolver: zodResolver(passwordUpdateFormSchema),
+    defaultValues: {
+      password: "",
+    },
+    mode: "onChange",
+  });
   const [isEditMode, setIsEditMode] = useState(false);
+
+  // require recent login meme apres peu de temps de co?
+  const onSubmitLogin = async (data: PasswordUpdateFormValues) => {
+    await updatePasswordUser(data.password);
+    setIsEditMode(false);
+  };
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
   };
 
-  const handleFormSubmit = (data: any) => {
-    props.onSubmit(data);
-    setIsEditMode(false);
-  };
-
   return (
-    <Form {...props.form}>
+    <Form {...emailForm}>
       <form
-        onSubmit={props.form.handleSubmit(handleFormSubmit)}
+        onSubmit={emailForm.handleSubmit(onSubmitLogin)}
         className="space-y-4"
       >
         <FormField
-          control={props.form.control}
-          name={props.name}
+          control={emailForm.control}
+          name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{props.label}</FormLabel>
+              <FormLabel>Mot de passe</FormLabel>
               <FormControl>
                 <div className="flex">
                   <Input
                     className="w-10/12"
-                    placeholder={props.defaultValue}
+                    placeholder="Mot de passe"
+                    type="password"
                     {...field}
                     disabled={!isEditMode}
                   />
-
                   {isEditMode ? (
                     <>
                       <Button

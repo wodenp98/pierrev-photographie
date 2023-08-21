@@ -1,9 +1,5 @@
-import {
-  createApi,
-  fakeBaseQuery,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
-import { doc, getDoc, deleteDoc } from "firebase/firestore";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase/index";
 
 interface User {
@@ -45,7 +41,51 @@ export const userApi = createApi({
         }
       },
     }),
+    updateFirstNameUser: builder.mutation<User, User>({
+      async queryFn(user: User) {
+        try {
+          const userRef = doc(db, "users", user.id);
+          await updateDoc(userRef, {
+            firstName: user.firstName,
+          });
+          return { data: user };
+        } catch (error: any) {
+          return { error: error.message };
+        }
+      },
+    }),
+    updateLastNameUser: builder.mutation<User, User>({
+      async queryFn(user: User) {
+        try {
+          const userRef = doc(db, "users", user.id);
+          await updateDoc(userRef, {
+            lastName: user.lastName,
+          });
+          return { data: user };
+        } catch (error: any) {
+          return { error: error.message };
+        }
+      },
+    }),
+    updateEmailUser: builder.mutation<User, User>({
+      async queryFn(user: User) {
+        try {
+          const userRef = doc(db, "users", user.id);
+          await updateDoc(userRef, {
+            email: user.email,
+          });
+          return { data: user };
+        } catch (error: any) {
+          return { error: error.message };
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetUserByIdQuery } = userApi;
+export const {
+  useGetUserByIdQuery,
+  useUpdateFirstNameUserMutation,
+  useUpdateLastNameUserMutation,
+  useUpdateEmailUserMutation,
+} = userApi;

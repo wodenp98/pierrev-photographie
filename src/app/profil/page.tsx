@@ -1,31 +1,38 @@
 /* eslint-disable react/no-unescaped-entities */
-
+"use client";
 import { CgLogOff } from "react-icons/cg";
-import { BsPencil } from "react-icons/bs";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import Link from "next/link";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { useGetUserByIdQuery } from "@/lib/redux/services/usersApi";
-import { useGetWishlistQuery } from "@/lib/redux/services/wishlistApi";
-import ProfilForm from "./ProfilForm";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import EmailFormProfil from "@/components/CompteComponents/EmailFormProfil";
+import FirstNameFormProfil from "@/components/CompteComponents/FirstNameFormProfil";
+import LastNameFormProfil from "@/components/CompteComponents/LastNameFormProfil";
+import PasswordFormProfil from "@/components/CompteComponents/PasswordFormProfil";
 
-export default function Profil({ userId }: { userId: string }) {
-  const { logOut, deleteAccount } = UserAuth();
-  const { data, isLoading } = useGetUserByIdQuery(userId);
-  const getWishlistQuery = useGetWishlistQuery(userId);
+export default function Profil() {
+  const router = useRouter();
+  const { user, logOut, deleteAccount } = UserAuth();
+  const { data, isLoading } = useGetUserByIdQuery(user?.uid);
+
+  console.log(user);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/compte");
+    }
+  }, [user, router]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -68,20 +75,25 @@ export default function Profil({ userId }: { userId: string }) {
       <div className="text-center my-4">Bonjour {data?.firstName} !</div>
       <Tabs defaultValue="informations" className="w-11/12">
         <TabsList
-          className="grid w-full h-10 grid-cols-3"
+          className="grid w-full h-10 grid-cols-2"
           style={{ backgroundColor: "rgb(244 244 245)" }}
         >
           <TabsTrigger value="informations">Informations</TabsTrigger>
           <TabsTrigger value="commandes">Commandes</TabsTrigger>
-          <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
         </TabsList>
         <TabsContent value="informations">
           <Card>
             <CardHeader className="flex flex-col">
               <CardTitle>Informations Personnelles</CardTitle>
             </CardHeader>
-
-            <ProfilForm userId={userId} />
+            <CardContent className="space-y-2">
+              <EmailFormProfil userId={user?.uid} />
+              <LastNameFormProfil userId={user?.uid} />
+              <FirstNameFormProfil userId={user?.uid} />
+              {user?.providerData[0].providerId === "password" && (
+                <PasswordFormProfil userId={user?.uid} />
+              )}
+            </CardContent>
 
             <CardFooter>
               <Button
@@ -104,47 +116,6 @@ export default function Profil({ userId }: { userId: string }) {
                 <p>Vous n'avez pas encore effectué d'achat sur notre site!</p>
                 <span>Mais vous pouvez changer ça 😉</span>
               </div>
-            </CardContent>
-            <CardFooter>
-              <Link href="/boutique">
-                <Button className="bg-lightBlack text-white">BOUTIQUE</Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="wishlist">
-          <Card>
-            <CardHeader>
-              <CardTitle>Wishlist</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {getWishlistQuery.data?.length === 0 ? (
-                <div className="flex flex-col items-center">
-                  <p>Vous n'avez pas de wishlist!</p>
-                  <span>Mais vous pouvez changer ça 😉</span>
-                </div>
-              ) : (
-                getWishlistQuery.data?.map((item) => (
-                  <div className="flex justify-around mb-2" key={item.id}>
-                    <div className="mr-4 ">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.nom}
-                        width={120}
-                        height={80}
-                        className="object-cover w-[100px] h-[80px]"
-                      />
-                    </div>
-                    <div className="flex flex-col justify-between flex-wrap w-2/5 mr-6">
-                      <h2 className="text-sm">{item.nom}</h2>
-                      <p className="text-xs text-gray-500 truncate w-full">
-                        {item.description}
-                      </p>
-                      <p className="text-sm text-gray-500">{item.prix} €</p>
-                    </div>
-                  </div>
-                ))
-              )}
             </CardContent>
             <CardFooter>
               <Link href="/boutique">

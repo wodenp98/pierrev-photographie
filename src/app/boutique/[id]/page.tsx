@@ -2,11 +2,6 @@
 import Image from "next/image";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useGetBoutiqueItemByIdQuery } from "../../../../lib/redux/services/shopApi";
-import {
-  useAddToWishlistMutation,
-  useGetWishlistQuery,
-  useDeleteToWishlistMutation,
-} from "@/lib/redux/services/wishlistApi";
 import { ShopForm } from "../../../../components/Form/Form";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -20,64 +15,8 @@ interface Props {
   };
 }
 export default function BoutiqueItemId({ params: { id } }: Props) {
-  const { user } = UserAuth();
-  const router = useRouter();
   const { toast } = useToast();
   const { data, isError, isLoading } = useGetBoutiqueItemByIdQuery(id);
-  const getWishlistQuery = useGetWishlistQuery(user?.uid);
-  const [deleteToWishlist] = useDeleteToWishlistMutation();
-  const [addToWishlist] = useAddToWishlistMutation();
-  const [isLiked, setIsLiked] = useState(false);
-
-  const userWishlist = getWishlistQuery.data;
-
-  useEffect(() => {
-    if (userWishlist) {
-      setIsLiked(userWishlist.some((item) => item.id === id));
-    }
-  }, [userWishlist, id]);
-
-  const handleAddToWishlist = () => {
-    if (!user) {
-      return router.push("/compte");
-    }
-    if (data) {
-      const product = {
-        id: data.id,
-        nom: data.nom,
-        prix: data.prix,
-        description: data.description,
-        imageUrl: data.imageUrl,
-      };
-
-      if (isLiked) {
-        deleteToWishlist({
-          userId: user.uid,
-          product,
-        });
-        getWishlistQuery.refetch();
-        setIsLiked(false);
-        toast({
-          className: "bg-red-500 text-white",
-          title: `${product.nom} a été retiré de votre wishlist`,
-          duration: 3000,
-        });
-      } else {
-        addToWishlist({
-          userId: user.uid,
-          product,
-        });
-
-        getWishlistQuery.refetch();
-        setIsLiked(true);
-        toast({
-          className: "bg-green-500 text-white",
-          title: `${product.nom} a été ajouté à votre wishlist`,
-          duration: 3000,
-        });
-      }
-    }
-  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -109,18 +48,6 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
         <div className="mt-3">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl">{data?.nom}</h1>
-            {/* onclick ici */}
-            {isLiked ? (
-              <AiFillHeart
-                className="text-2xl text-red-600"
-                onClick={handleAddToWishlist}
-              />
-            ) : (
-              <AiOutlineHeart
-                className="text-2xl"
-                onClick={handleAddToWishlist}
-              />
-            )}
           </div>
 
           <p className="text-sm mt-6 text-gray-500">{data?.description}</p>

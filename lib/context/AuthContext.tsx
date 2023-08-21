@@ -9,11 +9,19 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   updateProfile,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
+  setPersistence,
+  browserSessionPersistence,
   deleteUser,
   signInWithPopup,
+  EmailAuthProvider,
+  browserLocalPersistence,
 } from "firebase/auth";
 import { auth, db } from "../firebase";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
 
 const AuthContext = createContext<any>({});
@@ -54,6 +62,7 @@ export const AuthContextProvider = ({ children }: any) => {
 
   const signIn = async (email: string, password: string) => {
     try {
+      setPersistence(auth, browserLocalPersistence);
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.error("Failed to sign in:", error);
@@ -62,6 +71,7 @@ export const AuthContextProvider = ({ children }: any) => {
 
   const googleSignIn = async () => {
     try {
+      setPersistence(auth, browserLocalPersistence);
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider).then(() => {
         const user = auth.currentUser;
@@ -82,6 +92,104 @@ export const AuthContextProvider = ({ children }: any) => {
     }
   };
 
+  const openCredentialModal = async () => {
+    return new Promise((resolve, reject) => {
+      const email = prompt("Veuillez entrer votre adresse e-mail:");
+      const password = prompt("Veuillez entrer votre mot de passe:");
+
+      if (email && password) {
+        resolve({ email, password });
+      } else {
+        reject(new Error("Informations d'identification non fournies."));
+      }
+    });
+  };
+
+  const reauthenticate = async (credential: any) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await reauthenticateWithCredential(currentUser, credential);
+      }
+    } catch (error) {
+      console.error("Re-authentication failed:", error);
+      throw error; // Rethrow the error to handle it in the calling code
+    }
+  };
+
+  const reauthenticateWithGoogle = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const provider = new GoogleAuthProvider();
+        await reauthenticateWithPopup(currentUser, provider);
+      }
+    } catch (error) {
+      console.error("Re-authentication with Google failed:", error);
+      throw error;
+    }
+  };
+
+  const updateFirstNameUser = async (firstName: string) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await updateProfile(currentUser, {
+          displayName: `${firstName} ${user.displayName?.split(" ")[1]}`,
+        }).then(() => {
+          updateDoc(doc(db, "users", currentUser.uid), {
+            firstName: firstName,
+          });
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update first name:", error);
+    }
+  };
+
+  const updateLastNameUser = async (lastName: string) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await updateProfile(currentUser, {
+          displayName: `${user.displayName?.split(" ")[0]} ${lastName}`,
+        }).then(() => {
+          updateDoc(doc(db, "users", currentUser.uid), {
+            lastName: lastName,
+          });
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update last name:", error);
+    }
+  };
+
+  const updateEmailUser = async (email: string) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await updateEmail(currentUser, email).then(() => {
+          updateDoc(doc(db, "users", currentUser.uid), {
+            email: email,
+          });
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update email:", error);
+    }
+  };
+
+  const updatePasswordUser = async (password: string) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await updatePassword(currentUser, password);
+      }
+    } catch (error) {
+      console.error("Failed to update password:", error);
+    }
+  };
+
   const resetPassword = async (email: string) => {
     try {
       await sendPasswordResetEmail(auth, email);
@@ -94,6 +202,7 @@ export const AuthContextProvider = ({ children }: any) => {
     try {
       if (user) {
         await deleteUser(user).then(() => {
+          // delete panier
           deleteDoc(doc(db, "users", user.uid));
           toast({
             className: "bg-red-500 text-white",
@@ -123,8 +232,23 @@ export const AuthContextProvider = ({ children }: any) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      console.log("secondUser", currentUser);
+
+      const user = auth.currentUser;
+      console.log(user);
+
+      if (user?.metadata.lastSignInTime) {
+        const lastSignInTime = new Date(user?.metadata.lastSignInTime);
+        const now = new Date();
+
+        const diff = now.getTime() - lastSignInTime.getTime();
+        const diffInDays = diff / (1000 * 60 * 60 * 24);
+
+        if (diffInDays > 3) {
+          signOut(auth);
+        }
+      }
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -134,7 +258,12 @@ export const AuthContextProvider = ({ children }: any) => {
         user,
         createUser,
         signIn,
+        updateFirstNameUser,
+        updateLastNameUser,
+        updateEmailUser,
+        updatePasswordUser,
         resetPassword,
+        reauthenticate,
         googleSignIn,
         logOut,
         deleteAccount,
