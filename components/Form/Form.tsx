@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { UserAuth } from "@/lib/context/AuthContext";
-import { useAddToCartMutation } from "@/lib/redux/services/cartApi";
+import {
+  useAddToCartMutation,
+  useGetCartQuery,
+} from "@/lib/redux/services/cartApi";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { AccordionShop } from "../Accordion/Accordion";
 import { useRouter } from "next/navigation";
 import { toast } from "../ui/use-toast";
+import { get } from "http";
 
 type FormValues = {
   [key: string]: string;
@@ -70,6 +74,7 @@ const SelectInput: React.FC<{
 export const ShopForm = ({ product }: any) => {
   const { user } = UserAuth();
   const router = useRouter();
+  const getCart = useGetCartQuery(user?.uid);
   const [addToCart] = useAddToCartMutation();
   const {
     register,
@@ -119,6 +124,7 @@ export const ShopForm = ({ product }: any) => {
       impression: formValues.impression,
     };
     addToCart({ userId: user.uid, cart: productToCart });
+    getCart.refetch();
     toast({
       className: "bg-green-500 text-white",
       title: `${product.nom} a été ajouté à votre panier`,

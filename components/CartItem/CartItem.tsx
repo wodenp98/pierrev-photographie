@@ -1,4 +1,7 @@
-import { useDeleteToCartMutation } from "@/lib/redux/services/cartApi";
+import {
+  useDeleteToCartMutation,
+  useGetCartQuery,
+} from "@/lib/redux/services/cartApi";
 import {
   Accordion,
   AccordionItem,
@@ -6,12 +9,13 @@ import {
   AccordionContent,
 } from "@radix-ui/react-accordion";
 import Image from "next/image";
-
+import { use } from "react";
 export default function CartItem({ item, id }: any) {
   const [deleteToCart] = useDeleteToCartMutation();
+  const getCart = useGetCartQuery(id);
   const handleDeleteFromCart = () => {
     deleteToCart({ userId: id, cart: item }).then(() => {
-      window.location.reload();
+      getCart.refetch();
     });
   };
 

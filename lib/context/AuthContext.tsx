@@ -19,6 +19,7 @@ import {
   signInWithPopup,
   EmailAuthProvider,
   browserLocalPersistence,
+  signInWithRedirect,
 } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
@@ -73,7 +74,7 @@ export const AuthContextProvider = ({ children }: any) => {
     try {
       setPersistence(auth, browserLocalPersistence);
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider).then(() => {
+      await signInWithRedirect(auth, provider).then(() => {
         const user = auth.currentUser;
 
         if (user) {
@@ -90,19 +91,6 @@ export const AuthContextProvider = ({ children }: any) => {
     } catch (error) {
       console.error("Failed to sign in with Google:", error);
     }
-  };
-
-  const openCredentialModal = async () => {
-    return new Promise((resolve, reject) => {
-      const email = prompt("Veuillez entrer votre adresse e-mail:");
-      const password = prompt("Veuillez entrer votre mot de passe:");
-
-      if (email && password) {
-        resolve({ email, password });
-      } else {
-        reject(new Error("Informations d'identification non fournies."));
-      }
-    });
   };
 
   const reauthenticate = async (credential: any) => {
