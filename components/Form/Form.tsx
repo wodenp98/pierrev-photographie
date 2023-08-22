@@ -1,6 +1,16 @@
-import { AccordionShop } from "../Accordion/Accordion";
-import Image from "next/image";
 import { useState } from "react";
+import { UserAuth } from "@/lib/context/AuthContext";
+import {
+  useAddToCartMutation,
+  useGetCartQuery,
+} from "@/lib/redux/services/cartApi";
+import { useForm } from "react-hook-form";
+import Image from "next/image";
+import { AccordionShop } from "../Accordion/Accordion";
+import { useRouter } from "next/navigation";
+import { toast } from "../ui/use-toast";
+import { get } from "http";
+
 type FormValues = {
   [key: string]: string;
   format: string;
@@ -26,35 +36,58 @@ const prices: Record<string, Record<string, number>> = {
   },
 };
 
-const SelectBox: React.FC<{
+const SelectInput: React.FC<{
   label: string;
-  value: string;
-  placeholder: string;
-  onChange: (value: string) => void;
+  name: string;
   options: string[];
-}> = ({ label, value, placeholder, onChange, options }) => {
+  required: boolean;
+  errors: any;
+  register: any;
+  onChange: (value: string) => void;
+}> = ({ label, name, options, errors, required, register, onChange }) => {
   return (
     <div className="flex flex-col mb-2">
-      <label className="mb-1 text-sm font-medium text-gray-700">{label}</label>
+      <label htmlFor={name} className="mb-1 text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <select
-        value={value}
+        id={name}
+        name={name}
+        {...register(name, { required })}
         onChange={(e) => onChange(e.target.value)}
         className="px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 border-gray-300"
       >
         <option value="" disabled hidden>
-          {placeholder}
+          -- Select an option --
         </option>
-        {options.map((option) => (
-          <option key={option} value={option}>
+        {options.map((option: any) => (
+          <option key={option} value={option.value}>
             {option}
           </option>
         ))}
       </select>
+      {errors[name] && <p className="text-red-500 mb-2">{label} is required</p>}
     </div>
   );
 };
 
-export const ShopForm = () => {
+export const ShopForm = ({ product }: any) => {
+  const { user } = UserAuth();
+  const router = useRouter();
+  const getCart = useGetCartQuery(user?.uid);
+  const [addToCart] = useAddToCartMutation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      format: "",
+      rendu: "",
+      impression: "",
+    },
+    mode: "onChange",
+  });
   const [formValues, setFormValues] = useState<FormValues>({
     format: "",
     rendu: "",
@@ -74,44 +107,80 @@ export const ShopForm = () => {
 
   const price = getPrice(formValues);
 
+  const onSubmit = () => {
+    // si pas d'user il faut se connecter
+    // open modal avec possibilité de se connecter
+    if (!user) {
+      return router.push("/compte");
+    }
+
+    const productToCart = {
+      id: product.id,
+      nom: product.nom,
+      price: price,
+      imageUrl: product.imageUrl,
+      format: formValues.format,
+      rendu: formValues.rendu,
+      impression: formValues.impression,
+    };
+    addToCart({ userId: user.uid, cart: productToCart });
+    getCart.refetch();
+    toast({
+      className: "bg-green-500 text-white",
+      title: `${product.nom} a été ajouté à votre panier`,
+      duration: 3000,
+    });
+  };
+
   return (
     <div className="p-4">
-      <form className="max-w-sm">
-        <SelectBox
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm">
+        <SelectInput
           label="Format"
-          value={formValues.format}
-          placeholder="Sélectionner"
+          name="format"
+          options={["30*45 cm", "60*40 cm", "90*60 cm", "100*70 cm"]}
+          required={true}
           onChange={(value) =>
             setFormValues((prevState) => ({ ...prevState, format: value }))
           }
-          options={["30*45 cm", "60*40 cm", "90*60 cm", "100*70 cm"]}
+          errors={errors}
+          register={register}
         />
-        <SelectBox
+        <SelectInput
           label="Rendu"
-          value={formValues.rendu}
-          placeholder="Sélectionner"
-          onChange={(value) =>
-            setFormValues((prevState) => ({ ...prevState, rendu: value }))
-          }
+          name="rendu"
           options={["Mat", "Satiné"]}
+          required={true}
+          errors={errors}
+          onChange={(value) => {
+            setFormValues((prevState) => ({ ...prevState, rendu: value }));
+          }}
+          register={register}
         />
-        <SelectBox
+        <SelectInput
           label="Impression"
-          value={formValues.impression}
-          placeholder="Sélectionner"
-          onChange={(value) =>
-            setFormValues((prevState) => ({ ...prevState, impression: value }))
-          }
+          name="impression"
           options={["Subligraphie", "Fine Art seul", "Alu Dibond"]}
+          required={true}
+          errors={errors}
+          onChange={(value) => {
+            setFormValues((prevState) => ({ ...prevState, impression: value }));
+          }}
+          register={register}
         />
-        <div className="mt-2 flex justify-center">
-          <button className="uppercase bg-lightBlack text-lg text-white  py-2 px-4 ">
+        <div className="mt-8 flex justify-center">
+          <button
+            type="submit"
+            className="uppercase bg-lightBlack text-lg text-white  py-2 px-4 "
+          >
             Ajouter au panier {price.toFixed(2)}€
           </button>
         </div>
       </form>
+
       <div className="flex flex-col items-center mt-6">
         <h2>Impression 100% MADE IN FRANCE</h2>
+
         <Image
           src="/france.png"
           alt="Drapeau de la France"

@@ -24,22 +24,21 @@ export default function Boutique() {
 
       <h1 className="ml-6 mt-6 text-4xl">Boutique</h1>
 
-      <section className="flex justify-center flex-col w-5/6 mx-auto">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-5/6 mx-auto mt-6">
         {data?.map((item) => (
           <Link key={item.id} href={`/boutique/${item.id}`}>
-            <div key={item.id} className="border rounded-md my-4 shadow">
-              <div className="image-wrapper landscape:flex portrait:flex">
+            <div key={item.id} className="border rounded-md shadow">
+              <div className="image-wrapper">
                 <Image
                   key={item.id}
                   src={item.imageUrl}
                   alt={item.nom}
-                  object-fit="cover"
                   width={325}
                   height={200}
                   className="object-cover h-auto w-full rounded-t-md"
                 />
               </div>
-              <div className="flex flex-col ml-2">
+              <div className="p-4">
                 <h2 className="text-xl my-2">{item.nom}</h2>
                 <p className="text-sm text-gray-400">{item.description}</p>
                 <span className="text-black-400 my-2">
