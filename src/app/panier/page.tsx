@@ -1,5 +1,6 @@
 "use client";
 import { UserAuth } from "@/lib/context/AuthContext";
+import { loadStripe } from "@stripe/stripe-js";
 import { BsCreditCard } from "react-icons/bs";
 import {
   useGetCartQuery,
@@ -17,6 +18,10 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import NoUserWishlist from "@/components/NoAccessComponents/NoUser";
 import NoDataForAUserWishlist from "@/components/NoAccessComponents/NoDataForAUser";
+
+const stripePromise = loadStripe(
+  `${process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}`
+);
 
 export default function Panier() {
   const { user } = UserAuth();
@@ -36,6 +41,23 @@ export default function Panier() {
   }
 
   const totalPrice = userCart?.reduce((acc, item) => acc + item.price, 0);
+
+  const handleCheckout = async () => {
+    const stripe = await stripePromise;
+    const response = await fetch("/api/payment", {
+      method: "POST",
+      body: JSON.stringify(userCart),
+    });
+
+    const responseData = await response.json(); // Convertir la réponse JSON
+    console.log(responseData);
+
+    // Utiliser la propriété id de responseData
+    const result = await stripe?.redirectToCheckout({
+      sessionId: responseData.id,
+    });
+    console.log(result);
+  };
 
   return (
     <main>
@@ -61,7 +83,10 @@ export default function Panier() {
               <span className="uppercase font-bold text-lg">Total</span>
               <span className="text-lg">{totalPrice} €</span>
             </div>
-            <Button className="bg-lightBlack text-white mt-8 w-1/2">
+            <Button
+              className="bg-lightBlack text-white mt-8 w-1/2"
+              onClick={handleCheckout}
+            >
               <div className="flex items-center justify-center ">
                 <p>Paiement</p>
                 <BsCreditCard className="ml-4 w-5 h-5 text-center" />
