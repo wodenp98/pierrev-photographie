@@ -65,6 +65,17 @@ export const cartApi = createApi({
         }
       },
     }),
+    deleteAllCart: builder.mutation<CartType[], string>({
+      async queryFn(id: string) {
+        try {
+          const userCartRef = doc(db, "users", id, "panier");
+          await deleteDoc(userCartRef);
+          return { data: [] };
+        } catch (error: any) {
+          return { error: error.message };
+        }
+      },
+    }),
   }),
 });
 
@@ -72,4 +83,5 @@ export const {
   useAddToCartMutation,
   useGetCartQuery,
   useDeleteToCartMutation,
+  useDeleteAllCartMutation,
 } = cartApi;

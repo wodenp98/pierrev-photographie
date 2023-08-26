@@ -8,7 +8,7 @@ import { natureApi } from "./services/natureApi";
 import { sportApi } from "./services/sportApi";
 import { stageApi } from "./services/stageApi";
 import { userApi } from "./services/usersApi";
-
+import { historyCommandApi } from "./services/historyCommandApi";
 import { cartApi } from "./services/cartApi";
 
 export const store = configureStore({
@@ -22,7 +22,7 @@ export const store = configureStore({
     [sportApi.reducerPath]: sportApi.reducer,
     [stageApi.reducerPath]: stageApi.reducer,
     [userApi.reducerPath]: userApi.reducer,
-
+    [historyCommandApi.reducerPath]: historyCommandApi.reducer,
     [cartApi.reducerPath]: cartApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -36,7 +36,7 @@ export const store = configureStore({
       sportApi.middleware,
       stageApi.middleware,
       userApi.middleware,
-
+      historyCommandApi.middleware,
       cartApi.middleware
     ),
 });

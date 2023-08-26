@@ -46,17 +46,22 @@ export default function Panier() {
     const stripe = await stripePromise;
     const response = await fetch("/api/payment", {
       method: "POST",
-      body: JSON.stringify(userCart),
+      body: JSON.stringify({
+        cart: userCart,
+        userId: user?.uid,
+        email: user?.email,
+      }),
     });
 
-    const responseData = await response.json(); // Convertir la réponse JSON
-    console.log(responseData);
+    const responseData = await response.json();
 
-    // Utiliser la propriété id de responseData
     const result = await stripe?.redirectToCheckout({
       sessionId: responseData.id,
     });
-    console.log(result);
+
+    if (result?.error) {
+      console.log(result.error.message);
+    }
   };
 
   return (

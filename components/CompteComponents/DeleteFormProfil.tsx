@@ -74,8 +74,9 @@ export default function DeleteFormProfil({ userId }: { userId: string }) {
   const handleDeleteAccount = async () => {
     if (lastSignInTimestamp < 60 * 60 * 1000) {
       await deleteAccount();
+    } else {
+      setIsPasswordModalOpen(true);
     }
-    setIsPasswordModalOpen(true);
   };
 
   const handlePasswordModalSubmit = async (data: PasswordUpdateFormValues) => {

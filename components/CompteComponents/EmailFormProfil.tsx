@@ -55,9 +55,6 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
-  const lastSignInTimestamp =
-    Date.now() - new Date(user?.metadata.lastSignInTime).getTime();
-
   const emailForm = useForm<EmailUpdateFormValues>({
     resolver: zodResolver(emailUpdateFormSchema),
     defaultValues: {
@@ -74,27 +71,34 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
     mode: "onChange",
   });
 
-  // si provider = google on peut pas modifier l'email
+  const lastSignInTimestamp =
+    Date.now() - new Date(user?.metadata.lastSignInTime).getTime();
+
+  if (lastSignInTimestamp <= 60 * 60 * 1000) {
+    console.log("oui");
+  } else {
+    console.log("non");
+  }
+
+  // reauthenticatewithgoogle
 
   const onSubmitLogin = async (data: EmailUpdateFormValues) => {
     if (data.email !== user?.email) {
       if (lastSignInTimestamp <= 60 * 60 * 1000) {
         console.log("oui");
-        // Directly update email without showing modal
         await updateEmailUser(data.email).then(() => {
           getUser.refetch();
         });
 
         setIsEditMode(false);
+      } else {
+        setIsPasswordModalOpen(true);
       }
-
-      setIsPasswordModalOpen(true);
     } else {
       console.log("error");
     }
   };
 
-  // reproduire comme pour le email
   const handlePasswordModalSubmit = async (data: PasswordUpdateFormValues) => {
     const credential = EmailAuthProvider.credential(user?.email, data.password);
     await reauthenticate(credential);
@@ -182,7 +186,6 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
                         placeholder="Mot de passe"
                         type="password"
                         {...field}
-                        disabled={!isEditMode}
                       />
                     </FormControl>
                     <FormMessage className="text-red-600" />

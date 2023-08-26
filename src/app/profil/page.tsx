@@ -14,8 +14,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { useGetUserByIdQuery } from "@/lib/redux/services/usersApi";
+import { useGetHistoryCommandQuery } from "@/lib/redux/services/historyCommandApi";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import CardHistoryItem from "@/components/CardHistoryItem/CardHistoryItem";
 import EmailFormProfil from "@/components/CompteComponents/EmailFormProfil";
 import FirstNameFormProfil from "@/components/CompteComponents/FirstNameFormProfil";
 import LastNameFormProfil from "@/components/CompteComponents/LastNameFormProfil";
@@ -24,10 +26,9 @@ import DeleteFormProfil from "@/components/CompteComponents/DeleteFormProfil";
 
 export default function Profil() {
   const router = useRouter();
-  const { user, logOut, deleteAccount } = UserAuth();
+  const { user, logOut } = UserAuth();
   const { data, isLoading } = useGetUserByIdQuery(user?.uid);
-
-  console.log(user);
+  const { data: historyCommand } = useGetHistoryCommandQuery(user?.uid);
 
   useEffect(() => {
     if (!user) {
@@ -42,14 +43,6 @@ export default function Profil() {
   const handleSignOut = async () => {
     try {
       await logOut();
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    try {
-      await deleteAccount();
     } catch (error) {
       throw error;
     }
@@ -106,11 +99,14 @@ export default function Profil() {
               <CardTitle>Commandes</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {/* data? aucune commande : previous commande */}
-              <div className="flex flex-col items-center text-center">
-                <p>Vous n'avez pas encore effectué d'achat sur notre site!</p>
-                <span>Mais vous pouvez changer ça 😉</span>
-              </div>
+              {historyCommand?.length === 0 ? (
+                <div className="flex flex-col items-center text-center">
+                  <p>Vous n'avez pas encore effectué d'achat sur notre site!</p>
+                  <span>Mais vous pouvez changer ça 😉</span>
+                </div>
+              ) : (
+                <CardHistoryItem historyCommand={historyCommand} />
+              )}
             </CardContent>
             <CardFooter>
               <Link href="/boutique">
