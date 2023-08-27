@@ -23,6 +23,7 @@ import FirstNameFormProfil from "@/components/CompteComponents/FirstNameFormProf
 import LastNameFormProfil from "@/components/CompteComponents/LastNameFormProfil";
 import PasswordFormProfil from "@/components/CompteComponents/PasswordFormProfil";
 import DeleteFormProfil from "@/components/CompteComponents/DeleteFormProfil";
+import { Separator } from "@radix-ui/react-select";
 
 export default function Profil() {
   const router = useRouter();
@@ -105,7 +106,15 @@ export default function Profil() {
                   <span>Mais vous pouvez changer ça 😉</span>
                 </div>
               ) : (
-                <CardHistoryItem historyCommand={historyCommand} />
+                historyCommand?.map((command) => (
+                  <>
+                    <CardHistoryItem
+                      key={command.id}
+                      historyCommand={command}
+                    />
+                    <Separator className="my-4 bg-gray-500 h-[1px]" />
+                  </>
+                ))
               )}
             </CardContent>
             <CardFooter>

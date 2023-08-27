@@ -166,8 +166,10 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
       <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-            <DialogDescription>Please enter your password</DialogDescription>
+            <DialogTitle>Vérification de l'identité requise</DialogTitle>
+            <DialogDescription>
+              Veuillez entrer votre mot de passe
+            </DialogDescription>
           </DialogHeader>
 
           <Form {...passwordForm}>
@@ -189,8 +191,14 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
                       />
                     </FormControl>
                     <FormMessage className="text-red-600" />
-
-                    <Button type="submit">Confirmer</Button>
+                    <div className="flex justify-center">
+                      <Button
+                        type="submit"
+                        className="bg-lightBlack text-white w-1/4 mt-2"
+                      >
+                        Confirmer
+                      </Button>
+                    </div>
                   </FormItem>
                 )}
               />
