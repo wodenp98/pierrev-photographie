@@ -8,10 +8,12 @@ import {
 import Image from "next/image";
 
 export default function CardHistoryItem({ historyCommand }: any) {
-  console.log(historyCommand);
+  const date = new Date(historyCommand.createdAt * 1000);
+  const dateLocale = date.toLocaleDateString("fr-FR");
+
   return (
     <div key={historyCommand.id}>
-      <p className="font-bold text-sm">Le {historyCommand.createdAt}</p>
+      <p className="font-bold text-sm">Le {dateLocale}</p>
       <div className="flex mt-5 w-full">
         <Image
           key={historyCommand.id}

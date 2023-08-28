@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { Input } from "../ui/input";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,9 +55,8 @@ export default function PasswordFormProfil({ userId }: { userId: string }) {
   const lastSignInTimestamp =
     Date.now() - new Date(user?.metadata.lastSignInTime).getTime();
 
-  // require recent login meme apres peu de temps de co?
   const onSubmitLogin = async (data: PasswordUpdateFormValues) => {
-    if (lastSignInTimestamp < 60 * 60 * 1000) {
+    if (lastSignInTimestamp <= 60 * 60 * 1000) {
       await updatePasswordUser(data.password).then(() => {
         getUser.refetch();
       });
@@ -72,7 +72,7 @@ export default function PasswordFormProfil({ userId }: { userId: string }) {
     await reauthenticate(credential);
 
     // emailForm.getValues("email")
-    await updatePasswordUser(data.password).then(() => {
+    await updatePasswordUser(passwordForm.getValues("password")).then(() => {
       getUser.refetch();
     });
 

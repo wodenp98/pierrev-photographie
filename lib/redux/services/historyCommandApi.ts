@@ -10,7 +10,7 @@ export type HistoryCommandType = {
   format: string;
   rendu: string;
   impression: string;
-  timeStamp: string;
+  createdAt: string;
 };
 export const historyCommandApi = createApi({
   reducerPath: "historyCommandApi",

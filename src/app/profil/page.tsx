@@ -24,7 +24,8 @@ import LastNameFormProfil from "@/components/CompteComponents/LastNameFormProfil
 import PasswordFormProfil from "@/components/CompteComponents/PasswordFormProfil";
 import DeleteFormProfil from "@/components/CompteComponents/DeleteFormProfil";
 import { Separator } from "@radix-ui/react-select";
-import { time } from "console";
+import { db } from "@/lib/firebase";
+import { collection, doc, getDocs } from "firebase/firestore";
 
 export default function Profil() {
   const router = useRouter();
@@ -32,7 +33,9 @@ export default function Profil() {
   const { data, isLoading } = useGetUserByIdQuery(user?.uid);
   const { data: historyCommand } = useGetHistoryCommandQuery(user?.uid);
 
-  console.log(historyCommand);
+  const sortedArray = historyCommand
+    ?.slice()
+    .sort((a, b) => parseInt(b.createdAt) - parseInt(a.createdAt));
 
   useEffect(() => {
     if (!user) {
@@ -109,7 +112,7 @@ export default function Profil() {
                   <span>Mais vous pouvez changer ça 😉</span>
                 </div>
               ) : (
-                historyCommand?.map((command) => (
+                sortedArray?.map((command) => (
                   <div key={command.id}>
                     <CardHistoryItem historyCommand={command} />
                     <Separator className="my-4 bg-gray-500 h-[1px]" />

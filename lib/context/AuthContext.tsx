@@ -14,7 +14,6 @@ import {
   reauthenticateWithCredential,
   reauthenticateWithPopup,
   setPersistence,
-  browserSessionPersistence,
   deleteUser,
   signInWithPopup,
   EmailAuthProvider,
@@ -22,7 +21,14 @@ import {
   signInWithRedirect,
 } from "firebase/auth";
 import { auth, db } from "../firebase";
-import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
 
 const AuthContext = createContext<any>({});
@@ -74,20 +80,7 @@ export const AuthContextProvider = ({ children }: any) => {
     try {
       setPersistence(auth, browserLocalPersistence);
       const provider = new GoogleAuthProvider();
-      await signInWithRedirect(auth, provider).then(() => {
-        const user = auth.currentUser;
-
-        if (user) {
-          setDoc(doc(db, "users", user.uid), {
-            firstName: user.displayName?.split(" ")[0],
-            lastName: user.displayName?.split(" ")[1],
-            email: user.email,
-            image: user.photoURL,
-            uid: user.uid,
-            emailVerified: user.emailVerified,
-          });
-        }
-      });
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       console.error("Failed to sign in with Google:", error);
     }
@@ -189,15 +182,27 @@ export const AuthContextProvider = ({ children }: any) => {
   const deleteAccount = async () => {
     try {
       if (user) {
-        await deleteUser(user).then(() => {
-          // delete panier
-          deleteDoc(doc(db, "users", user.uid));
-          toast({
-            className: "bg-red-500 text-white",
-            title: "Votre compte a été supprimé",
-            duration: 3000,
-          });
+        // Supprimer la collection "panier" de l'utilisateur
+        const panierCollection = collection(db, `users/${user.uid}/panier`);
+        const panierDocs = await getDocs(panierCollection);
+        panierDocs.forEach(async (doc) => {
+          console.log(doc);
+          await deleteDoc(doc.ref);
         });
+
+        // Supprimer la collection "history" de l'utilisateur
+        const historyCollection = collection(db, `users/${user.uid}/history`);
+        const historyDocs = await getDocs(historyCollection);
+        historyDocs.forEach(async (doc) => {
+          console.log(doc);
+          await deleteDoc(doc.ref);
+        });
+
+        // Supprimer le compte utilisateur
+        await deleteUser(user);
+
+        // Supprimer le document utilisateur
+        await deleteDoc(doc(db, "users", user.uid));
       }
     } catch (error: any) {
       console.error("Failed to delete account:", error);
@@ -216,10 +221,24 @@ export const AuthContextProvider = ({ children }: any) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+
+      if (
+        currentUser &&
+        currentUser.providerData[0].providerId !== "password"
+      ) {
+        setDoc(doc(db, "users", currentUser.uid), {
+          firstName: currentUser.displayName?.split(" ")[0],
+          lastName: currentUser.displayName?.split(" ")[1],
+          email: currentUser.email,
+          image: currentUser.photoURL,
+          uid: currentUser.uid,
+          emailVerified: currentUser.emailVerified,
+        });
+      }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   return (
     <AuthContext.Provider
@@ -233,6 +252,7 @@ export const AuthContextProvider = ({ children }: any) => {
         updatePasswordUser,
         resetPassword,
         reauthenticate,
+        reauthenticateWithGoogle,
         googleSignIn,
         logOut,
         deleteAccount,
@@ -246,3 +266,60 @@ export const AuthContextProvider = ({ children }: any) => {
 export const UserAuth = () => {
   return useContext(AuthContext);
 };
+
+// import firebase from "firebase/app";
+// import "firebase/firestore";
+
+// // Initialiser Firebase
+// firebase.initializeApp({
+//   // Vos informations de configuration Firebase ici
+// });
+
+// // Récupérer une instance de Firestore
+// const db = firebase.firestore();
+
+// // Supprimer la collection "panier" de l'utilisateur avec l'ID "userId"
+// const batchSize = 10;
+// const collectionRef = collection(db, "users", userId, "panier");
+// await deleteCollection(db, collectionRef, batchSize);
+
+// // Supprimer la collection "history" de l'utilisateur avec l'ID "userId"
+// const collectionRef = collection(db, "users", userId, "history");
+// await deleteCollection(db, collectionRef, batchSize);
+
+// // Fonction pour supprimer une collection Firestore en lots de documents
+// async function deleteCollection(db, collectionRef, batchSize) {
+//   const q = query(collectionRef, orderBy('name'), limit(batchSize));
+
+//   return new Promise((resolve) => {
+//     deleteQueryBatch(db, q, batchSize, resolve);
+//   });
+// }
+
+// async function deleteQueryBatch(db, query, batchSize, resolve) {
+//   const snapshot = await getDocs(query);
+
+//   // When there are no documents left, we are done
+//   let numDeleted = 0;
+//   if (snapshot.size > 0) {
+//     // Delete documents in a batch
+//     const batch = writeBatch(db);
+//     snapshot.docs.forEach((doc) => {
+//       batch.delete(doc.ref);
+//       numDeleted++;
+//     });
+
+//     await batch.commit();
+//   }
+
+//   if (numDeleted < batchSize) {
+//     resolve();
+//     return;
+//   }
+
+//   // Recurse on the next process tick, to avoid
+//   // exploding the stack.
+//   setTimeout(() => {
+//     deleteQueryBatch(db, query, batchSize, resolve);
+//   }, 0);
+// }

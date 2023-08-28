@@ -8,8 +8,6 @@ import { redirect } from "next/navigation";
 export default function Compte() {
   const { user } = UserAuth();
 
-  // refaire cette page
-
   return (
     <main>
       <ul className="flex ml-6">

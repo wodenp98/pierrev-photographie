@@ -72,10 +72,11 @@ export default function DeleteFormProfil({ userId }: { userId: string }) {
   });
 
   const handleDeleteAccount = async () => {
-    if (lastSignInTimestamp < 60 * 60 * 1000) {
-      await deleteAccount();
-    } else {
+    if (user?.providerData[0]?.providerId === "password") {
       setIsPasswordModalOpen(true);
+    } else {
+      await reauthenticateWithGoogle();
+      await deleteAccount();
     }
   };
 

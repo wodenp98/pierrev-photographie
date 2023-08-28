@@ -44,8 +44,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { DialogHeader, DialogFooter } from "../ui/dialog";
-import { Label } from "@/components/ui/label";
+import { DialogHeader } from "../ui/dialog";
 
 export default function EmailFormProfil({ userId }: { userId: string }) {
   const { user, updateEmailUser, reauthenticateWithGoogle, reauthenticate } =
@@ -74,39 +73,45 @@ export default function EmailFormProfil({ userId }: { userId: string }) {
   const lastSignInTimestamp =
     Date.now() - new Date(user?.metadata.lastSignInTime).getTime();
 
-  if (lastSignInTimestamp <= 60 * 60 * 1000) {
-    console.log("oui");
-  } else {
-    console.log("non");
-  }
-
-  // reauthenticatewithgoogle
-
   const onSubmitLogin = async (data: EmailUpdateFormValues) => {
-    if (data.email !== user?.email) {
-      if (lastSignInTimestamp <= 60 * 60 * 1000) {
-        console.log("oui");
-        await updateEmailUser(data.email).then(() => {
+    if (data.email === user?.email) {
+      console.log("error");
+      return;
+    }
+
+    if (lastSignInTimestamp <= 60 * 60 * 1000) {
+      await updateEmailUser(data.email);
+      getUser.refetch();
+      setIsEditMode(false);
+    } else {
+      if (user?.providerData[0]?.providerId === "password") {
+        setIsPasswordModalOpen(true);
+      } else {
+        await reauthenticateWithGoogle();
+        await updateEmailUser(emailForm.getValues("email")).then(() => {
           getUser.refetch();
         });
-
-        setIsEditMode(false);
-      } else {
-        setIsPasswordModalOpen(true);
       }
-    } else {
-      console.log("error");
     }
   };
 
   const handlePasswordModalSubmit = async (data: PasswordUpdateFormValues) => {
-    const credential = EmailAuthProvider.credential(user?.email, data.password);
-    await reauthenticate(credential);
+    if (user?.providerData[0].providerId === "password") {
+      const credential = EmailAuthProvider.credential(
+        user?.email,
+        data.password
+      );
+      await reauthenticate(credential);
 
-    await updateEmailUser(emailForm.getValues("email")).then(() => {
-      getUser.refetch();
-    });
-
+      await updateEmailUser(emailForm.getValues("email")).then(() => {
+        getUser.refetch();
+      });
+    } else {
+      await reauthenticateWithGoogle();
+      await updateEmailUser(emailForm.getValues("email")).then(() => {
+        getUser.refetch();
+      });
+    }
     setIsEditMode(false);
     setIsPasswordModalOpen(false);
   };
