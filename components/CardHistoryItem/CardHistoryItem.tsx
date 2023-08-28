@@ -11,7 +11,7 @@ export default function CardHistoryItem({ historyCommand }: any) {
   console.log(historyCommand);
   return (
     <div key={historyCommand.id}>
-      <p className="font-bold text-sm">Le {historyCommand.timestamp}</p>
+      <p className="font-bold text-sm">Le {historyCommand.createdAt}</p>
       <div className="flex mt-5 w-full">
         <Image
           key={historyCommand.id}

@@ -14,6 +14,9 @@ export async function POST(request: Request) {
           images: [item.imageUrl],
           description:
             item.format + " - " + item.impression + " - " + item.rendu,
+          metadata: {
+            id: item.id,
+          },
         },
         unit_amount: item.price * 100,
       },

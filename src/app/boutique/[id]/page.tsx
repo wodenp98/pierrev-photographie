@@ -35,7 +35,7 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
         <li className="text-gray-300 mx-2">-</li>
         <li>{data?.nom}</li>
       </ul>
-      <section className="w-11/12 mt-6 flex justify-center flex-col mx-auto">
+      <section className="w-11/12 mt-6 flex items-center justify-center flex-col mx-auto">
         <div>
           <Image
             src={data?.imageUrl as string}

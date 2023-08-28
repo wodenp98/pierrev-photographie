@@ -24,12 +24,15 @@ import LastNameFormProfil from "@/components/CompteComponents/LastNameFormProfil
 import PasswordFormProfil from "@/components/CompteComponents/PasswordFormProfil";
 import DeleteFormProfil from "@/components/CompteComponents/DeleteFormProfil";
 import { Separator } from "@radix-ui/react-select";
+import { time } from "console";
 
 export default function Profil() {
   const router = useRouter();
   const { user, logOut } = UserAuth();
   const { data, isLoading } = useGetUserByIdQuery(user?.uid);
   const { data: historyCommand } = useGetHistoryCommandQuery(user?.uid);
+
+  console.log(historyCommand);
 
   useEffect(() => {
     if (!user) {
@@ -107,13 +110,10 @@ export default function Profil() {
                 </div>
               ) : (
                 historyCommand?.map((command) => (
-                  <>
-                    <CardHistoryItem
-                      key={command.id}
-                      historyCommand={command}
-                    />
+                  <div key={command.id}>
+                    <CardHistoryItem historyCommand={command} />
                     <Separator className="my-4 bg-gray-500 h-[1px]" />
-                  </>
+                  </div>
                 ))
               )}
             </CardContent>
