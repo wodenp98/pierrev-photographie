@@ -4,9 +4,22 @@
 import Login from "@/components/CompteComponents/Login";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Compte() {
-  const { user } = UserAuth();
+  const { user, isLoading } = UserAuth();
+  const router = useRouter();
+
+  if (isLoading) {
+    console.log("loading");
+    return <div>Loading...</div>;
+  }
+  // profil page ou logged in?
+  // useEffect(() => {
+  //   if (!user) {
+  //     router.push("/login");
+  // }
+  // })
 
   return (
     <main>

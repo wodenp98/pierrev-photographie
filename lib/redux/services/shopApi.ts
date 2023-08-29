@@ -8,6 +8,7 @@ type BoutiqueItem = {
   prix: number;
   description: string;
   imageUrl: string;
+  imagePreview: string;
 };
 
 export const boutiqueApi = createApi({

@@ -30,11 +30,15 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import { set } from "zod";
 
 const AuthContext = createContext<any>({});
 
 export const AuthContextProvider = ({ children }: any) => {
   const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const createUser = async (
     email: string,
@@ -42,6 +46,7 @@ export const AuthContextProvider = ({ children }: any) => {
     firstName: string,
     lastName: string
   ) => {
+    setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password).then(() => {
         const currentUser = auth.currentUser;
@@ -60,29 +65,40 @@ export const AuthContextProvider = ({ children }: any) => {
               displayName: `${firstName} ${lastName}`,
             });
           });
+          router.push("/compte");
         }
       });
     } catch (error) {
       console.error("Failed to create user:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const signIn = async (email: string, password: string) => {
+    setIsLoading(true);
     try {
       setPersistence(auth, browserLocalPersistence);
       await signInWithEmailAndPassword(auth, email, password);
+      router.push("/compte");
     } catch (error) {
       console.error("Failed to sign in:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const googleSignIn = async () => {
+    setIsLoading(true);
     try {
       setPersistence(auth, browserLocalPersistence);
       const provider = new GoogleAuthProvider();
       await signInWithRedirect(auth, provider);
+      router.push("/compte");
     } catch (error) {
       console.error("Failed to sign in with Google:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -210,11 +226,14 @@ export const AuthContextProvider = ({ children }: any) => {
   };
 
   const logOut = () => {
+    setIsLoading(true);
     try {
       setUser(null);
       signOut(auth);
     } catch (error) {
       console.error("Failed to log out:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -246,6 +265,7 @@ export const AuthContextProvider = ({ children }: any) => {
         user,
         createUser,
         signIn,
+        isLoading,
         updateFirstNameUser,
         updateLastNameUser,
         updateEmailUser,
@@ -266,60 +286,3 @@ export const AuthContextProvider = ({ children }: any) => {
 export const UserAuth = () => {
   return useContext(AuthContext);
 };
-
-// import firebase from "firebase/app";
-// import "firebase/firestore";
-
-// // Initialiser Firebase
-// firebase.initializeApp({
-//   // Vos informations de configuration Firebase ici
-// });
-
-// // Récupérer une instance de Firestore
-// const db = firebase.firestore();
-
-// // Supprimer la collection "panier" de l'utilisateur avec l'ID "userId"
-// const batchSize = 10;
-// const collectionRef = collection(db, "users", userId, "panier");
-// await deleteCollection(db, collectionRef, batchSize);
-
-// // Supprimer la collection "history" de l'utilisateur avec l'ID "userId"
-// const collectionRef = collection(db, "users", userId, "history");
-// await deleteCollection(db, collectionRef, batchSize);
-
-// // Fonction pour supprimer une collection Firestore en lots de documents
-// async function deleteCollection(db, collectionRef, batchSize) {
-//   const q = query(collectionRef, orderBy('name'), limit(batchSize));
-
-//   return new Promise((resolve) => {
-//     deleteQueryBatch(db, q, batchSize, resolve);
-//   });
-// }
-
-// async function deleteQueryBatch(db, query, batchSize, resolve) {
-//   const snapshot = await getDocs(query);
-
-//   // When there are no documents left, we are done
-//   let numDeleted = 0;
-//   if (snapshot.size > 0) {
-//     // Delete documents in a batch
-//     const batch = writeBatch(db);
-//     snapshot.docs.forEach((doc) => {
-//       batch.delete(doc.ref);
-//       numDeleted++;
-//     });
-
-//     await batch.commit();
-//   }
-
-//   if (numDeleted < batchSize) {
-//     resolve();
-//     return;
-//   }
-
-//   // Recurse on the next process tick, to avoid
-//   // exploding the stack.
-//   setTimeout(() => {
-//     deleteQueryBatch(db, query, batchSize, resolve);
-//   }, 0);
-// }

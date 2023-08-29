@@ -5,6 +5,18 @@ export async function POST(request: Request) {
   const userCart = await request.json();
   const origin = request.headers.get("origin");
 
+  const taxRate = await stripe.taxRates.create({
+    display_name: "TVA",
+    description: "VAT France",
+    country: "FR",
+    jurisdiction: "FR",
+    percentage: 10,
+    inclusive: false,
+    tax_type: "vat",
+  });
+
+  console.log(taxRate);
+
   const lineItems = userCart?.cart.map((item: any) => {
     return {
       price_data: {
@@ -21,6 +33,7 @@ export async function POST(request: Request) {
         unit_amount: item.price * 100,
       },
       quantity: 1,
+      tax_rates: [taxRate.id],
     };
   });
 
@@ -42,9 +55,9 @@ export async function POST(request: Request) {
     invoice_creation: {
       enabled: true,
     },
-    automatic_tax: {
-      enabled: true,
-    },
+    // automatic_tax: {
+    //   enabled: true,
+    // },
   });
 
   return NextResponse.json(session);
