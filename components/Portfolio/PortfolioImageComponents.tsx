@@ -68,13 +68,13 @@ export const PortfolioImageComponents = ({
           slidesPerView={1}
           pagination={{ clickable: true }}
           loop={true}
-          className={`rounded-md w-5/6 h-1/2`}
+          className={`rounded-md w-4/6 h-3/6 bg-white/30`}
         >
           {data?.map((slide: DataItem) => (
             <SwiperSlide key={slide.id}>
               <div className="relative h-full">
                 <AiOutlineClose
-                  className="absolute z-50 top-2 right-2 text-2xl text-white"
+                  className="absolute z-50 top-2 right-2 text-2xl text-red-500 cursor-pointer"
                   onClick={() => setIsModalOpen(false)}
                 />
                 <Image
@@ -82,7 +82,7 @@ export const PortfolioImageComponents = ({
                   alt={slide.nom}
                   fill={true}
                   object-fit="cover"
-                  className="object-cover h-auto w-full"
+                  className="object-contain h-auto w-full"
                 />
               </div>
             </SwiperSlide>

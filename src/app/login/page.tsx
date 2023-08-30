@@ -1,9 +1,9 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
   Card,
@@ -11,9 +11,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Input } from "../ui/input";
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "../ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
 
 const profileFormSchema = z
@@ -99,7 +99,7 @@ const loginFormSchema = z.object({
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function Login() {
-  const { createUser, googleSignIn, signIn } = UserAuth();
+  const { user, createUser, googleSignIn, signIn, isLoading } = UserAuth();
   const router = useRouter();
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -122,7 +122,11 @@ export default function Login() {
     mode: "onChange",
   });
 
-  // faire deux formulaires distincts
+  useEffect(() => {
+    if (user) {
+      router.push("/compte");
+    }
+  });
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
@@ -206,8 +210,12 @@ export default function Login() {
                       Mot de passe oublié?
                     </p>
                   </Link>
-                  <Button className="bg-lightBlack w-full text-white">
-                    Save changes
+                  <Button
+                    className="bg-lightBlack w-full text-white"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Loading..." : "Se connecter"}
                   </Button>
                 </form>
               </Form>

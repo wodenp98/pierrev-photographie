@@ -39,7 +39,6 @@ export default function Carousel() {
                 src={slide.imageUrl}
                 alt={slide.nom}
                 fill={true}
-                object-fit="cover"
                 priority={true}
               />
             </div>

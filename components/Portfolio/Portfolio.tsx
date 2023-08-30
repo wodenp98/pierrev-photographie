@@ -26,7 +26,7 @@ export default function PhotographComponent() {
       </h2>
 
       <div className="flex items-center flex-col bg-white h-5/6">
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 p-4">
+        <div className="grid grid-cols-2 w-10/12 h-10/12 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 p-4">
           <PortfolioImageComponents
             src="/assets/portfolioAssets/cascade.jpg"
             alt="Cascade"
