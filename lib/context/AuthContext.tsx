@@ -93,7 +93,7 @@ export const AuthContextProvider = ({ children }: any) => {
     try {
       setPersistence(auth, browserLocalPersistence);
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      await signInWithRedirect(auth, provider);
       router.push("/compte");
     } catch (error) {
       console.error("Failed to sign in with Google:", error);

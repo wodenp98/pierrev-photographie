@@ -14,7 +14,7 @@ export const LinkGmail = () => {
         height={40}
         className="pr-4"
       />
-      <p>pierrev.photographie@gmail.com</p>
+      <p>pierre.v.photographie@gmail.com</p>
     </a>
   );
 };

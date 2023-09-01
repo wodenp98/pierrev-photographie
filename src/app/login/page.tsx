@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -101,6 +101,7 @@ type LoginFormValues = z.infer<typeof loginFormSchema>;
 export default function Login() {
   const { user, createUser, googleSignIn, signIn, isLoading } = UserAuth();
   const router = useRouter();
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -123,10 +124,22 @@ export default function Login() {
   });
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     if (user) {
       router.push("/compte");
     }
-  });
+  }, [router, user]);
+
+  if (isPageLoading) {
+    return <div>Loading...</div>;
+  }
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
@@ -156,7 +169,7 @@ export default function Login() {
 
   return (
     <section className="flex flex-col items-center mt-4">
-      <Tabs defaultValue="login" className="w-11/12">
+      <Tabs defaultValue="login" className="w-11/12 lg:w-8/12">
         <TabsList
           className="grid w-full h-10 grid-cols-2"
           style={{ backgroundColor: "rgb(244 244 245)" }}

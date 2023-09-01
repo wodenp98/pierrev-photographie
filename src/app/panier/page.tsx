@@ -73,7 +73,7 @@ export default function Panier() {
       </ul>
       <h1 className="ml-6 mt-6 text-4xl">Panier</h1>
       <section className="flex flex-col items-center mt-4">
-        <Card className="w-11/12">
+        <Card className="w-11/12 lg:w-9/12">
           <CardHeader>
             <CardTitle>Vos articles</CardTitle>
           </CardHeader>

@@ -41,9 +41,11 @@ export default function Compte() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (!user) {
-    router.push("/login");
-  }
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [router, user]);
 
   const sortedArray = historyCommand
     ?.slice()
@@ -69,7 +71,7 @@ export default function Compte() {
         <li>Compte</li>
       </ul>
 
-      <section className="flex flex-col items-center mt-4">
+      <section className="flex flex-col items-center justify-center mt-4">
         <div className="flex items-end justify-end">
           <div className="relative">
             <Image
@@ -80,14 +82,14 @@ export default function Compte() {
               className="rounded-full object-cover"
             />
             <CgLogOff
-              className="text-3xl  text-red-500 absolute bottom-[-5px] right-[-5px]"
+              className="text-3xl  text-red-500 cursor-pointer absolute bottom-[-5px] right-[-5px]"
               onClick={handleSignOut}
             />
           </div>
         </div>
 
         <div className="text-center my-4">Bonjour {data?.firstName} !</div>
-        <Tabs defaultValue="informations" className="w-11/12">
+        <Tabs defaultValue="informations" className="w-11/12 lg:w-8/12">
           <TabsList
             className="grid w-full h-10 grid-cols-2"
             style={{ backgroundColor: "rgb(244 244 245)" }}

@@ -17,7 +17,7 @@ export default function NoUserWishlist({
 }) {
   return (
     <section className="flex flex-col items-center mt-4 ">
-      <Card className="w-11/12">
+      <Card className="w-11/12 h-[400px]">
         <CardHeader>
           <CardTitle>{title}</CardTitle>
         </CardHeader>

@@ -68,7 +68,7 @@ export const PortfolioImageComponents = ({
           slidesPerView={1}
           pagination={{ clickable: true }}
           loop={true}
-          className={`rounded-md w-4/6 h-3/6 bg-white/30`}
+          className={`rounded-md w-4/6 h-3/6 `}
         >
           {data?.map((slide: DataItem) => (
             <SwiperSlide key={slide.id}>

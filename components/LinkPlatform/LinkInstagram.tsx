@@ -16,7 +16,7 @@ export const LinkInstagram = () => {
         height={40}
         className="pr-4"
       />
-      <p>@pierrev.photographie</p>
+      <p>@pierre.v.photographie</p>
     </Link>
   );
 };

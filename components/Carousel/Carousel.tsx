@@ -35,12 +35,16 @@ export default function Carousel() {
         {data?.map((slide) => (
           <SwiperSlide key={slide.id}>
             <div className="relative h-full">
-              <Image
-                src={slide.imageUrl}
-                alt={slide.nom}
-                fill={true}
-                priority={true}
-              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Image
+                  src={slide.imageUrl}
+                  alt={slide.nom}
+                  className="object-cover object-center w-full h-full"
+                  width={2000}
+                  height={2000}
+                  priority={true}
+                />
+              </div>
             </div>
           </SwiperSlide>
         ))}

@@ -42,9 +42,7 @@ export default function Boutique() {
 
               <div className="p-4">
                 <h2 className="text-xl my-2">{item.nom}</h2>
-                <p className="text-sm text-gray-400 truncate">
-                  {item.description}
-                </p>
+
                 <span className="text-black-400 my-2">
                   {item.prix} € - 450 €
                 </span>

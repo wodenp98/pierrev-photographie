@@ -15,7 +15,7 @@ export const carouselApi = createApi({
     getCarouselItems: builder.query<CarouselItem[], void>({
       async queryFn() {
         try {
-          const ref = collection(db, "Carousel");
+          const ref = collection(db, "CarouselTest");
           const querySnapshot = await getDocs(ref);
           let carouselItem: CarouselItem[] = [];
           querySnapshot?.forEach((doc) => {
