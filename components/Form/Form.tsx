@@ -188,7 +188,6 @@ export const ShopForm = ({ product }: any) => {
           height={50}
         />
       </div>
-      <AccordionShop />
     </div>
   );
 };
