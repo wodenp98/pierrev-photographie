@@ -10,6 +10,8 @@ import { AccordionShop } from "../Accordion/Accordion";
 import { useRouter } from "next/navigation";
 import { toast } from "../ui/use-toast";
 import { get } from "http";
+import { ToastAction } from "@radix-ui/react-toast";
+import NoUserWishlist from "@/components/NoAccessComponents/NoUser";
 
 type FormValues = {
   [key: string]: string;
@@ -46,7 +48,7 @@ const SelectInput: React.FC<{
   onChange: (value: string) => void;
 }> = ({ label, name, options, errors, required, register, onChange }) => {
   return (
-    <div className="flex flex-col mb-2">
+    <div className="flex flex-col mb-2 w-full">
       <label htmlFor={name} className="mb-1 text-sm font-medium text-gray-700">
         {label}
       </label>
@@ -55,7 +57,7 @@ const SelectInput: React.FC<{
         name={name}
         {...register(name, { required })}
         onChange={(e) => onChange(e.target.value)}
-        className="px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 border-gray-300"
+        className="px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 border-gray-300 w-full"
       >
         <option value="" disabled hidden>
           -- Select an option --
@@ -108,10 +110,21 @@ export const ShopForm = ({ product }: any) => {
   const price = getPrice(formValues);
 
   const onSubmit = () => {
-    // si pas d'user il faut se connecter
-    // open modal avec possibilité de se connecter
     if (!user) {
-      return router.push("/compte");
+      return toast({
+        className: "bg-lightBlack text-white",
+        title:
+          "Vous devez créer un compte afin de pouvoir ajouter des éléments dans votre panier",
+        action: (
+          <ToastAction
+            altText="Se connecter"
+            onClick={() => router.push("/login")}
+          >
+            Se connecter
+          </ToastAction>
+        ),
+        duration: 3000,
+      });
     }
 
     const productToCart = {
@@ -128,13 +141,21 @@ export const ShopForm = ({ product }: any) => {
     toast({
       className: "bg-green-500 text-white",
       title: `${product.nom} a été ajouté à votre panier`,
+      action: (
+        <ToastAction
+          altText="Voir le panier"
+          onClick={() => router.push("/panier")}
+        >
+          Voir le panier
+        </ToastAction>
+      ),
       duration: 3000,
     });
   };
 
   return (
-    <div className="p-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm">
+    <div className="mt-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         <SelectInput
           label="Format"
           name="format"

@@ -6,6 +6,7 @@ import { db } from "@/lib/firebase";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { VscLoading } from "react-icons/vsc";
 import Image from "next/image";
+import Confetti from "react-confetti";
 
 export default function CustomerDetails({ customerDetails }: any) {
   const { user } = UserAuth();
@@ -35,7 +36,9 @@ export default function CustomerDetails({ customerDetails }: any) {
 
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Order Details</h2>
+      <h2 className="text-2xl font-bold mb-4 flex flex-col items-center">
+        Order Details
+      </h2>
       {customerDetails.length > 0 ? (
         customerDetails.map((item: any, index: number) => (
           <div key={index} className="flex flex-col mb-4">
@@ -59,6 +62,13 @@ export default function CustomerDetails({ customerDetails }: any) {
           <p>Loading...</p>
         </div>
       )}
+      <Confetti
+        width={800}
+        height={800}
+        numberOfPieces={250}
+        recycle={false}
+        className="w-full h-full flex justify-center items-center"
+      />
     </div>
   );
 }

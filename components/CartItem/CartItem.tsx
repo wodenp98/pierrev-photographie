@@ -32,7 +32,7 @@ export default function CartItem({ item, id }: any) {
         />
       </div>
       <div className="flex-grow ml-4">
-        <p className="text-xl font-bold">{item.nom}</p>
+        <p className="text-sm lg:text-xl font-bold">{item.nom}</p>
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger className="text-sm text-gray-500">
@@ -51,7 +51,7 @@ export default function CartItem({ item, id }: any) {
         </Accordion>
       </div>
       <div className="flex flex-col items-end justify-between ml-4">
-        <span className="text-lg">{item.price} €</span>
+        <span className="text-sm lg:text-xl">{item.price} €</span>
         <button
           onClick={handleDeleteFromCart}
           className="text-gray-500 text-xs mt-2"

@@ -64,7 +64,7 @@ export const PortfolioImageComponents = ({
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] sm:max-h-[750px] md:max-w-[800px] md:max-h-[800px] lg:max-w-[900px] lg:max-h-[900px] bg-transparent border-none shadow-none">
+      <DialogContent className="sm:max-w-[650px] sm:max-h-[700px]  bg-transparent border-none shadow-none">
         <Swiper
           effect={"coverflow"}
           grabCursor={true}

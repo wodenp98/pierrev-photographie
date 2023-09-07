@@ -3,13 +3,13 @@
 import Image from "next/image";
 import { useGetBoutiqueItemsQuery } from "../../../lib/redux/services/shopApi";
 import Link from "next/link";
-import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { Suspense } from "react";
 
 export default function Boutique() {
   const { data, isLoading, isError } = useGetBoutiqueItemsQuery();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <p>Loading...</p>;
   }
 
   if (isError) {
@@ -24,8 +24,7 @@ export default function Boutique() {
       </ul>
 
       <h1 className="ml-6 mt-6 text-4xl">Boutique</h1>
-
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-5/6 mx-auto mt-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 w-5/6 mx-auto mt-6">
         {data?.map((item) => (
           <Link key={item.id} href={`/boutique/${item.id}`}>
             <div
@@ -36,8 +35,8 @@ export default function Boutique() {
                 key={item.id}
                 src={item.imageUrl}
                 alt={item.nom}
-                width={325}
-                height={200}
+                width={800}
+                height={800}
                 className="object-cover h-96 w-full rounded-t-md"
               />
 

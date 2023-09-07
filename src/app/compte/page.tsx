@@ -34,17 +34,14 @@ export default function Compte() {
   const { data: historyCommand } = useGetHistoryCommandQuery(user?.uid);
 
   useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
     const timer = setTimeout(() => {
       setIsPageLoading(false);
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-    }
   }, [router, user]);
 
   const sortedArray = historyCommand

@@ -1,15 +1,9 @@
 import CustomerDetails from "@/components/CustomerDetails/CustomerDetails";
 import { stripe } from "@/lib/stripe/stripe";
 import { BsFillPatchCheckFill } from "react-icons/bs";
-import Image from "next/image";
-import { db } from "@/lib/firebase";
-import { addDoc, collection } from "firebase/firestore";
-import { UserAuth } from "@/lib/context/AuthContext";
 
 export default async function Page({ searchParams }: { searchParams: any }) {
   const sessionId = searchParams?.session_id ?? "";
-  const checkoutSession = await stripe?.checkout.sessions.retrieve(sessionId);
-  const customerDetails = checkoutSession?.customer_details;
 
   const session = await stripe.checkout.sessions.retrieve(sessionId, {
     expand: ["line_items.data.price.product", "line_items"],
@@ -28,7 +22,6 @@ export default async function Page({ searchParams }: { searchParams: any }) {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      {/* <Image src="/money.png" alt="money" width={400} height={400} /> */}
       <BsFillPatchCheckFill size={50} color="green" />
       <p>Thank you for your purchase!</p>
       <CustomerDetails customerDetails={items} />
