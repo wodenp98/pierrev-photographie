@@ -18,6 +18,9 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import NoUserWishlist from "@/components/NoAccessComponents/NoUser";
 import NoDataForAUserWishlist from "@/components/NoAccessComponents/NoDataForAUser";
+import router from "next/router";
+import { useState, useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const stripePromise = loadStripe(
   `${process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}`
@@ -26,8 +29,16 @@ const stripePromise = loadStripe(
 export default function Panier() {
   const { user } = UserAuth();
   const { data: userCart, isError, isLoading } = useGetCartQuery(user?.uid);
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
-  if (!userCart) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!user && !isPageLoading) {
     return (
       <NoUserWishlist
         title="Mon panier"
@@ -36,7 +47,7 @@ export default function Panier() {
     );
   }
 
-  if (userCart?.length === 0) {
+  if (userCart?.length === 0 && !isPageLoading) {
     return <NoDataForAUserWishlist title="Mon panier" description="panier" />;
   }
 
@@ -73,32 +84,38 @@ export default function Panier() {
       </ul>
       <h1 className="ml-6 mt-6 text-4xl">Panier</h1>
       <section className="flex flex-col items-center mt-4">
-        <Card className="w-11/12 lg:w-9/12">
-          <CardHeader>
-            <CardTitle>Vos articles</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {userCart?.map((item) => (
-              <CartItem item={item} key={item.id} id={user.uid} />
-            ))}
-          </CardContent>
-          <CardFooter className="flex flex-col">
-            <Separator className="my-4 bg-gray-500" />
-            <div className="w-full flex justify-between">
-              <span className="uppercase font-bold text-lg">Total</span>
-              <span className="text-lg">{totalPrice} €</span>
-            </div>
-            <Button
-              className="bg-lightBlack text-white mt-8 w-1/2"
-              onClick={handleCheckout}
-            >
-              <div className="flex items-center justify-center ">
-                <p>Paiement</p>
-                <BsCreditCard className="ml-4 w-5 h-5 text-center" />
+        {isPageLoading ? (
+          <Card className="w-11/12 h-96 lg:w-9/12">
+            <Skeleton className="w-full h-full bg-zinc-500" />
+          </Card>
+        ) : (
+          <Card className="w-11/12 lg:w-9/12">
+            <CardHeader>
+              <CardTitle>Vos articles</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {userCart?.map((item) => (
+                <CartItem item={item} key={item.id} id={user.uid} />
+              ))}
+            </CardContent>
+            <CardFooter className="flex flex-col">
+              <Separator className="my-4 bg-gray-500" />
+              <div className="w-full flex justify-between">
+                <span className="uppercase font-bold text-lg">Total</span>
+                <span className="text-lg">{totalPrice} €</span>
               </div>
-            </Button>
-          </CardFooter>
-        </Card>
+              <Button
+                className="bg-lightBlack text-white mt-8 w-1/2"
+                onClick={handleCheckout}
+              >
+                <div className="flex items-center justify-center ">
+                  <p>Paiement</p>
+                  <BsCreditCard className="ml-4 w-5 h-5 text-center" />
+                </div>
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
       </section>
     </main>
   );

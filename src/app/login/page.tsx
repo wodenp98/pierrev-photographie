@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const profileFormSchema = z
   .object({
@@ -102,6 +103,7 @@ export default function Login() {
   const { user, createUser, googleSignIn, signIn, isLoading } = UserAuth();
   const router = useRouter();
   const [isPageLoading, setIsPageLoading] = useState(true);
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -124,22 +126,15 @@ export default function Login() {
   });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsPageLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     if (user) {
       router.push("/compte");
     }
-  }, [router, user]);
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 2000);
 
-  if (isPageLoading) {
-    return <div>Loading...</div>;
-  }
+    return () => clearTimeout(timer);
+  }, [router, user]);
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
@@ -169,190 +164,211 @@ export default function Login() {
 
   return (
     <section className="flex flex-col items-center mt-4">
-      <Tabs defaultValue="login" className="w-11/12 lg:w-8/12">
-        <TabsList
-          className="grid w-full h-10 grid-cols-2"
-          style={{ backgroundColor: "rgb(244 244 245)" }}
-        >
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="createaccount">Create Account</TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-          <Card>
-            <CardHeader>
-              <CardTitle>Login</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Form {...loginForm}>
-                <form
-                  onSubmit={loginForm.handleSubmit(onSubmitLogin)}
-                  className="space-y-4 mb-8"
-                >
-                  <FormField
-                    control={loginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="shadcn" {...field} />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Mot de passe</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="shadcn"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </FormItem>
-                    )}
-                  />
-                  <Link href="/forgotpassword">
-                    <p className="text-xs text-gray-600 underline cursor-pointer mt-4">
-                      Mot de passe oublié?
-                    </p>
-                  </Link>
-                  <Button
-                    className="bg-lightBlack w-full text-white"
-                    type="submit"
-                    disabled={isLoading}
+      {isPageLoading ? (
+        <Tabs defaultValue="login" className="w-11/12 lg:w-8/12">
+          <TabsList
+            className="grid w-full h-10 grid-cols-2"
+            style={{ backgroundColor: "rgb(244 244 245)" }}
+          >
+            <Skeleton className="w-full h-full bg-zinc-500" />
+          </TabsList>
+          <TabsContent value="login">
+            <Card>
+              <CardHeader className="h-20">
+                <Skeleton className="w-1/3 h-full bg-zinc-500" />
+              </CardHeader>
+              <CardContent className="h-96">
+                <Skeleton className="w-full h-full bg-zinc-500" />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <Tabs defaultValue="login" className="w-11/12 lg:w-8/12">
+          <TabsList
+            className="grid w-full h-10 grid-cols-2"
+            style={{ backgroundColor: "rgb(244 244 245)" }}
+          >
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="createaccount">Create Account</TabsTrigger>
+          </TabsList>
+          <TabsContent value="login">
+            <Card>
+              <CardHeader>
+                <CardTitle>Login</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Form {...loginForm}>
+                  <form
+                    onSubmit={loginForm.handleSubmit(onSubmitLogin)}
+                    className="space-y-4 mb-8"
                   >
-                    {isLoading ? "Loading..." : "Se connecter"}
-                  </Button>
-                </form>
-              </Form>
-              <div className="flex items-center justify-center">
-                <div className="w-20 h-0.5 bg-gray-300 mr-2"></div>
-                <div className="text-md">Ou avec</div>
-                <div className="w-20 h-0.5 bg-gray-300 ml-2"></div>
-              </div>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleSignIn}
-              >
-                <FcGoogle className="mr-2 h-4 w-4" />
-                Google
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="createaccount">
-          <Card>
-            <CardHeader>
-              <CardTitle>Create Account</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4 mb-8"
+                    <FormField
+                      control={loginForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="shadcn" {...field} />
+                          </FormControl>
+                          <FormMessage className="text-red-600" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={loginForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mot de passe</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="shadcn"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-600" />
+                        </FormItem>
+                      )}
+                    />
+                    <Link href="/forgotpassword">
+                      <p className="text-xs text-gray-600 underline cursor-pointer mt-4">
+                        Mot de passe oublié?
+                      </p>
+                    </Link>
+                    <Button
+                      className="bg-lightBlack w-full text-white"
+                      type="submit"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Loading..." : "Se connecter"}
+                    </Button>
+                  </form>
+                </Form>
+                <div className="flex items-center justify-center">
+                  <div className="w-20 h-0.5 bg-gray-300 mr-2"></div>
+                  <div className="text-md">Ou avec</div>
+                  <div className="w-20 h-0.5 bg-gray-300 ml-2"></div>
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleSignIn}
                 >
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Prénom</FormLabel>
-                        <FormControl>
-                          <Input placeholder="shadcn" {...field} />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nom</FormLabel>
-                        <FormControl>
-                          <Input placeholder="shadcn" {...field} />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="shadcn" {...field} />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Mot de passe</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="shadcn"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Confirmez votre mot de passe</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="shadcn"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </FormItem>
-                    )}
-                  />
+                  <FcGoogle className="mr-2 h-4 w-4" />
+                  Google
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="createaccount">
+            <Card>
+              <CardHeader>
+                <CardTitle>Create Account</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4 mb-8"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Prénom</FormLabel>
+                          <FormControl>
+                            <Input placeholder="shadcn" {...field} />
+                          </FormControl>
+                          <FormMessage className="text-red-600" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nom</FormLabel>
+                          <FormControl>
+                            <Input placeholder="shadcn" {...field} />
+                          </FormControl>
+                          <FormMessage className="text-red-600" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="shadcn" {...field} />
+                          </FormControl>
+                          <FormMessage className="text-red-600" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mot de passe</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="shadcn"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-600" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirmez votre mot de passe</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="shadcn"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-600" />
+                        </FormItem>
+                      )}
+                    />
 
-                  <Button className="bg-lightBlack w-full text-white">
-                    Save changes
-                  </Button>
-                </form>
-              </Form>
-              <div className="flex items-center justify-center ">
-                <div className="w-20 h-0.5 bg-gray-300 mr-2"></div>
-                <div className="text-md">Ou avec</div>
-                <div className="w-20 h-0.5 bg-gray-300 ml-2"></div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">
-                <FcGoogle className="mr-2 h-4 w-4" />
-                Google
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                    <Button className="bg-lightBlack w-full text-white">
+                      Save changes
+                    </Button>
+                  </form>
+                </Form>
+                <div className="flex items-center justify-center ">
+                  <div className="w-20 h-0.5 bg-gray-300 mr-2"></div>
+                  <div className="text-md">Ou avec</div>
+                  <div className="w-20 h-0.5 bg-gray-300 ml-2"></div>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button variant="outline" className="w-full">
+                  <FcGoogle className="mr-2 h-4 w-4" />
+                  Google
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      )}
     </section>
   );
 }
