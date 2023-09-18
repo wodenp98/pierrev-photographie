@@ -2,18 +2,10 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
 import { Input } from "../ui/input";
 import { UserAuth } from "@/lib/context/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
-import * as z from "zod";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,

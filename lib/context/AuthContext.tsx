@@ -13,13 +13,10 @@ import {
   updatePassword,
   reauthenticateWithCredential,
   reauthenticateWithPopup,
-  setPersistence,
   deleteUser,
   signInWithPopup,
-  EmailAuthProvider,
-  browserLocalPersistence,
-  signInWithRedirect,
 } from "firebase/auth";
+import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import { auth, db } from "../firebase";
 import {
   collection,
@@ -29,9 +26,7 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { set } from "zod";
 
 const AuthContext = createContext<any>({});
 
@@ -51,8 +46,15 @@ export const AuthContextProvider = ({ children }: any) => {
       await createUserWithEmailAndPassword(auth, email, password).then(() => {
         const currentUser = auth.currentUser;
         if (currentUser) {
-          console.log("currentUser", currentUser);
-
+          setCookie("user", currentUser.uid, {
+            maxAge: 60 * 60 * 24 * 7,
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            secure: true,
+            sameSite: "strict",
+            httpOnly: true,
+            path: "/",
+            domain: "localhost",
+          });
           setDoc(doc(db, "users", currentUser.uid), {
             firstName: firstName,
             lastName: lastName,
@@ -78,9 +80,20 @@ export const AuthContextProvider = ({ children }: any) => {
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      setPersistence(auth, browserLocalPersistence);
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/compte");
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        setCookie("user", currentUser.uid, {
+          maxAge: 60 * 60 * 24 * 7,
+          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          secure: true,
+          sameSite: "strict",
+          httpOnly: true,
+          path: "/",
+          domain: "localhost",
+        });
+        router.push("/compte");
+      }
     } catch (error) {
       console.error("Failed to sign in:", error);
     } finally {
@@ -91,10 +104,27 @@ export const AuthContextProvider = ({ children }: any) => {
   const googleSignIn = async () => {
     setIsLoading(true);
     try {
-      setPersistence(auth, browserLocalPersistence);
       const provider = new GoogleAuthProvider();
-      await signInWithRedirect(auth, provider);
-      router.push("/compte");
+      await signInWithPopup(auth, provider);
+      const currentUser = auth.currentUser;
+
+      if (currentUser) {
+        // Cookies.set("user", currentUser.uid, {
+        //   expires: 7,
+        //   secure: true,
+        //   sameSite: "strict",
+        // });
+
+        setCookie("user", currentUser.uid, {
+          maxAge: 60 * 60 * 24 * 7,
+          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          secure: true,
+          sameSite: "strict",
+          httpOnly: true,
+          path: "/",
+          domain: "localhost",
+        });
+      }
     } catch (error) {
       console.error("Failed to sign in with Google:", error);
     } finally {
@@ -198,15 +228,9 @@ export const AuthContextProvider = ({ children }: any) => {
   const deleteAccount = async () => {
     try {
       if (user) {
-        // Supprimer la collection "panier" de l'utilisateur
-        const panierCollection = collection(db, `users/${user.uid}/panier`);
-        const panierDocs = await getDocs(panierCollection);
-        panierDocs.forEach(async (doc) => {
-          console.log(doc);
-          await deleteDoc(doc.ref);
-        });
+        deleteCookie("user", { path: "/", domain: "localhost" });
+        deleteCookie("panier", { path: "/", domain: "localhost" });
 
-        // Supprimer la collection "history" de l'utilisateur
         const historyCollection = collection(db, `users/${user.uid}/history`);
         const historyDocs = await getDocs(historyCollection);
         historyDocs.forEach(async (doc) => {
@@ -214,10 +238,8 @@ export const AuthContextProvider = ({ children }: any) => {
           await deleteDoc(doc.ref);
         });
 
-        // Supprimer le compte utilisateur
         await deleteUser(user);
 
-        // Supprimer le document utilisateur
         await deleteDoc(doc(db, "users", user.uid));
       }
     } catch (error: any) {
@@ -230,6 +252,7 @@ export const AuthContextProvider = ({ children }: any) => {
     try {
       setUser(null);
       signOut(auth);
+      deleteCookie("user", { path: "/", domain: "localhost" });
     } catch (error) {
       console.error("Failed to log out:", error);
     } finally {

@@ -24,7 +24,16 @@ export default function Carousel() {
   return (
     <div className="relative h-[calc(100vh-97.5px)]">
       {isLoading ? (
-        <Skeleton className="w-full h-full absolute inset-0 bg-zinc-500 rounded-none" />
+        <>
+          <Skeleton className="w-full h-full absolute inset-0 bg-zinc-500 rounded-none" />
+          <div className="absolute bottom-0 left-0 w-full flex justify-center p-14 z-10">
+            <Link href="/boutique">
+              <button className="bg-lightBlack text-xl text-white  py-2 px-4 ">
+                BOUTIQUE
+              </button>
+            </Link>
+          </div>
+        </>
       ) : (
         <Swiper
           modules={[Pagination]}

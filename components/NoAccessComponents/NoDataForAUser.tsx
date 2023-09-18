@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
+import { BsCartX } from "react-icons/bs";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -9,22 +10,17 @@ import {
   CardFooter,
 } from "../ui/card";
 
-export default function NoDataForAUserWishlist({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+export default function NoDataForAUserWishlist() {
   return (
     <section className="flex flex-col items-center mt-4">
       <Card className="w-11/12 h-[400px]">
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
+          <CardTitle>Mon Panier</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="text-center">
-            <p>Vous n'avez pas d'article dans votre {description}</p>
+            <BsCartX className="w-20 h-20 mx-auto  text-gray-500" />
+            <p className="mt-8">Vous n'avez pas d'article dans votre panier</p>
           </div>
         </CardContent>
         <CardFooter>

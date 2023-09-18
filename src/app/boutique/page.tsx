@@ -49,17 +49,14 @@ export default function Boutique() {
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 w-5/6 mx-auto mt-6">
         {data?.map((item) => (
           <Link key={item.id} href={`/boutique/${item.id}`}>
-            <div
-              key={item.id}
-              className="border rounded-md shadow h-full w-full"
-            >
+            <div key={item.id} className="border rounded shadow h-full w-full">
               <Image
                 key={item.id}
                 src={item.imageUrl}
                 alt={item.nom}
-                width={800}
-                height={800}
-                className="object-cover h-96 w-full rounded-t-md"
+                width={1080}
+                height={1080}
+                className="object-cover h-96 w-full rounded-t"
               />
 
               <div className="p-4">

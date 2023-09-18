@@ -104,6 +104,14 @@ export default function Login() {
   const router = useRouter();
   const [isPageLoading, setIsPageLoading] = useState(true);
 
+  useEffect(() => {
+    if (user) {
+      router.push("/compte");
+    } else {
+      setIsPageLoading(false);
+    }
+  }, [user, router]);
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -124,17 +132,6 @@ export default function Login() {
     },
     mode: "onChange",
   });
-
-  useEffect(() => {
-    if (user) {
-      router.push("/compte");
-    }
-    const timer = setTimeout(() => {
-      setIsPageLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [router, user]);
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BiUserX } from "react-icons/bi";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -8,22 +9,19 @@ import {
   CardTitle,
 } from "../ui/card";
 
-export default function NoUserWishlist({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+export default function NoUserWishlist() {
   return (
     <section className="flex flex-col items-center mt-4 ">
       <Card className="w-11/12 h-[400px]">
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
+          <CardTitle>Mon Panier</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="text-center">
-            <p>Vous devez avoir un compte pour {description}</p>
+            <BiUserX className="w-20 h-20 mx-auto text-gray-500" />
+            <p className="mt-8">
+              Vous devez avoir un compte pour pouvoir créer un panier
+            </p>
           </div>
         </CardContent>
         <CardFooter>

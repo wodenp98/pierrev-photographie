@@ -1,17 +1,11 @@
 import { useState } from "react";
-import { UserAuth } from "@/lib/context/AuthContext";
-import {
-  useAddToCartMutation,
-  useGetCartQuery,
-} from "@/lib/redux/services/cartApi";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import { AccordionShop } from "../Accordion/Accordion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "../ui/use-toast";
-import { get } from "http";
 import { ToastAction } from "@radix-ui/react-toast";
-import NoUserWishlist from "@/components/NoAccessComponents/NoUser";
+import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 
 type FormValues = {
   [key: string]: string;
@@ -74,10 +68,7 @@ const SelectInput: React.FC<{
 };
 
 export const ShopForm = ({ product }: any) => {
-  const { user } = UserAuth();
   const router = useRouter();
-  const getCart = useGetCartQuery(user?.uid);
-  const [addToCart] = useAddToCartMutation();
   const {
     register,
     handleSubmit,
@@ -95,6 +86,17 @@ export const ShopForm = ({ product }: any) => {
     rendu: "",
     impression: "",
   });
+  const addToCart = (product: any) => {
+    setCookie("cart", JSON.stringify(product), {
+      maxAge: 60 * 60 * 24 * 7,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      secure: true,
+      sameSite: "strict",
+      httpOnly: true,
+      path: "/",
+      domain: "localhost",
+    });
+  };
 
   const getPrice = (formValues: FormValues) => {
     let price = 150;
@@ -110,23 +112,6 @@ export const ShopForm = ({ product }: any) => {
   const price = getPrice(formValues);
 
   const onSubmit = () => {
-    if (!user) {
-      return toast({
-        className: "bg-lightBlack text-white",
-        title:
-          "Vous devez créer un compte afin de pouvoir ajouter des éléments dans votre panier",
-        action: (
-          <ToastAction
-            altText="Se connecter"
-            onClick={() => router.push("/login")}
-          >
-            Se connecter
-          </ToastAction>
-        ),
-        duration: 3000,
-      });
-    }
-
     const productToCart = {
       id: product.id,
       nom: product.nom,
@@ -136,18 +121,23 @@ export const ShopForm = ({ product }: any) => {
       rendu: formValues.rendu,
       impression: formValues.impression,
     };
-    addToCart({ userId: user.uid, cart: productToCart });
-    getCart.refetch();
+
+    const getCart = getCookie("cart");
+    const existantCart = getCart ? JSON.parse(getCart) : [];
+
+    console.log("existantCart", existantCart);
+    const updatedCart = [...existantCart, productToCart];
+
+    console.log("updatedCart", updatedCart);
+
+    addToCart(updatedCart);
     toast({
       className: "bg-green-500 text-white",
       title: `${product.nom} a été ajouté à votre panier`,
       action: (
-        <ToastAction
-          altText="Voir le panier"
-          onClick={() => router.push("/panier")}
-        >
-          Voir le panier
-        </ToastAction>
+        <Link href="/panier">
+          <ToastAction altText="Voir le panier">Voir le panier</ToastAction>
+        </Link>
       ),
       duration: 3000,
     });

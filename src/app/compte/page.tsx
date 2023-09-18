@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CgLogOff } from "react-icons/cg";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -35,16 +35,12 @@ export default function Compte() {
   const { data: historyCommand } = useGetHistoryCommandQuery(user?.uid);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsPageLoading(false);
-    }, 2000);
-
-    if (!user && !isPageLoading) {
+    if (!user) {
       router.push("/login");
+    } else {
+      setIsPageLoading(false);
     }
-
-    return () => clearTimeout(timer);
-  }, [user, isPageLoading, router]);
+  }, [user, router]);
 
   const sortedArray = historyCommand
     ?.slice()
@@ -69,7 +65,7 @@ export default function Compte() {
       <section className="flex flex-col items-center justify-center mt-4">
         {isPageLoading ? (
           <div className="flex flex-col items-center justify-center space-y-4 w-full">
-            <Skeleton className="w-16 h-16 bg-zinc-500 rounded-full" />
+            {/* <Skeleton className="w-16 h-16 bg-zinc-500 rounded-full" /> */}
             <Tabs defaultValue="login" className="w-11/12 lg:w-8/12">
               <TabsList
                 className="grid w-full h-10 grid-cols-2"

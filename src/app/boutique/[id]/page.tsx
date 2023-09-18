@@ -75,14 +75,16 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
         <li>{data?.nom}</li>
       </ul>
       <section className="w-11/12 mt-6 mx-auto">
+        {/* ci dessous taille du composant? */}
         <div className="flex flex-col lg:flex-row">
           <div className="lg:w-1/2  flex justify-center">
             <Image
               src={data?.imageUrl as string}
               alt={data?.nom as string}
-              width={400}
-              height={400}
-              className="object-cover h-full w-full"
+              width={1080}
+              height={1080}
+              // object contain?
+              className="object-contain h-full w-full"
             />
           </div>
 

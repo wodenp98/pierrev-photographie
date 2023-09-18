@@ -3,62 +3,104 @@ import { UserAuth } from "@/lib/context/AuthContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { BsCreditCard } from "react-icons/bs";
 import {
-  useGetCartQuery,
-  useDeleteToCartMutation,
-} from "@/lib/redux/services/cartApi";
-import CartItem from "@/components/CartItem/CartItem";
-import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import NoUserWishlist from "@/components/NoAccessComponents/NoUser";
 import NoDataForAUserWishlist from "@/components/NoAccessComponents/NoDataForAUser";
-import router from "next/router";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@radix-ui/react-accordion";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import Link from "next/link";
 
 const stripePromise = loadStripe(
   `${process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}`
 );
 
+type CartItem = {
+  id: string;
+  nom: string;
+  price: number;
+  imageUrl: string;
+  format: string;
+  rendu: string;
+  impression: string;
+};
+
 export default function Panier() {
   const { user } = UserAuth();
-  const { data: userCart, isError, isLoading } = useGetCartQuery(user?.uid);
-  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isPageLoading, setIsPageLoading] = useState(false);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsPageLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
+    const cartItem = getCookie("cart");
+    if (cartItem) {
+      try {
+        const parsedCartItem = JSON.parse(cartItem);
+        setCart(parsedCartItem);
+      } catch (error) {
+        console.error("Error parsing cart item:", error);
+      }
+    }
   }, []);
 
-  if (!user && !isPageLoading) {
-    return (
-      <NoUserWishlist
-        title="Mon panier"
-        description="pouvoir créer un panier"
-      />
-    );
+  if (cart.length === 0 && !isPageLoading) {
+    return <NoDataForAUserWishlist />;
   }
+  const handleDeleteFromCart = (id: string) => {
+    const cartCookie = getCookie("cart");
+    const cart = cartCookie ? JSON.parse(cartCookie) : [];
 
-  if (userCart?.length === 0 && !isPageLoading) {
-    return <NoDataForAUserWishlist title="Mon panier" description="panier" />;
-  }
+    const updatedCart = cart.filter((item: any) => item.id !== id);
 
-  const totalPrice = userCart?.reduce((acc, item) => acc + item.price, 0);
+    setCookie("cart", JSON.stringify(updatedCart), {
+      maxAge: 60 * 60 * 24 * 7,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      secure: true,
+      sameSite: "strict",
+      httpOnly: true,
+      path: "/",
+      domain: "localhost",
+    });
+
+    setCart(updatedCart);
+  };
+
+  const totalPrice = cart?.reduce((acc, item: any) => acc + item.price, 0);
 
   const handleCheckout = async () => {
+    if (!user) {
+      return toast({
+        variant: "destructive",
+        className: "bg-red-500 text-white",
+        title: "Vous devez avoir un compte pour passer commande.",
+        action: (
+          <Link href={"/compte"}>
+            <ToastAction altText="Go to account">Compte</ToastAction>
+          </Link>
+        ),
+      });
+    }
+
     const stripe = await stripePromise;
     const response = await fetch("/api/payment", {
       method: "POST",
       body: JSON.stringify({
-        cart: userCart,
+        cart: cart,
         userId: user?.uid,
         email: user?.email,
       }),
@@ -94,8 +136,47 @@ export default function Panier() {
               <CardTitle>Vos articles</CardTitle>
             </CardHeader>
             <CardContent>
-              {userCart?.map((item) => (
-                <CartItem item={item} key={item.id} id={user.uid} />
+              {cart?.map((item: any) => (
+                <div key={item.id} className="flex mt-5">
+                  <div className="flex-shrink-0">
+                    <Image
+                      key={item.id}
+                      src={item.imageUrl}
+                      alt={item.nom}
+                      width={360}
+                      height={360}
+                      className="object-cover w-28 h-28 sm:w-36 sm:h-36"
+                    />
+                  </div>
+                  <div className="flex-grow ml-4">
+                    <p className="text-sm lg:text-xl font-bold">{item.nom}</p>
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger className="text-sm text-gray-500">
+                          Détails
+                        </AccordionTrigger>
+                        <AccordionContent className="text-xs">
+                          {item.format}
+                        </AccordionContent>
+                        <AccordionContent className="text-xs">
+                          {item.impression}
+                        </AccordionContent>
+                        <AccordionContent className="text-xs">
+                          {item.rendu}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  <div className="flex flex-col items-end justify-between ml-4">
+                    <span className="text-sm lg:text-xl">{item.price} €</span>
+                    <button
+                      onClick={() => handleDeleteFromCart(item.id)}
+                      className="text-gray-500 text-xs mt-2"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
               ))}
             </CardContent>
             <CardFooter className="flex flex-col">
