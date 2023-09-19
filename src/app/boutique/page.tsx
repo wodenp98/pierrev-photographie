@@ -46,28 +46,20 @@ export default function Boutique() {
       </ul>
 
       <h1 className="ml-6 mt-6 text-4xl">Boutique</h1>
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 w-5/6 mx-auto mt-6">
-        {data?.map((item) => (
-          <Link key={item.id} href={`/boutique/${item.id}`}>
-            <div key={item.id} className="border rounded shadow h-full w-full">
+      <section className="flex flex-col items-center mt-8">
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 w-11/12">
+          {data?.map((item) => (
+            <Link href={`/boutique/${item.id}`} key={item.id}>
               <Image
-                key={item.id}
                 src={item.imageUrl}
                 alt={item.nom}
                 width={1080}
                 height={1080}
-                className="object-cover h-96 w-full rounded-t"
+                className="w-full mb-6 object-cover"
               />
-
-              <div className="p-4">
-                <h2 className="text-xl my-2">{item.nom}</h2>
-                <span className="text-black-400 my-2">
-                  {item.prix} € - 450 €
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))}
+        </div>
       </section>
     </main>
   );

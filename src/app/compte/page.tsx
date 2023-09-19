@@ -35,12 +35,16 @@ export default function Compte() {
   const { data: historyCommand } = useGetHistoryCommandQuery(user?.uid);
 
   useEffect(() => {
-    if (!user) {
+    if (user) {
+      console.log("render if");
+      console.log(user, "user if");
+      setTimeout(() => setIsPageLoading(false), 2000);
+    } else if (!isLoading) {
+      console.log("render else");
+      console.log(user, "user else");
       router.push("/login");
-    } else {
-      setIsPageLoading(false);
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
 
   const sortedArray = historyCommand
     ?.slice()
@@ -63,7 +67,7 @@ export default function Compte() {
       </ul>
 
       <section className="flex flex-col items-center justify-center mt-4">
-        {isPageLoading ? (
+        {isPageLoading || isLoading ? (
           <div className="flex flex-col items-center justify-center space-y-4 w-full">
             {/* <Skeleton className="w-16 h-16 bg-zinc-500 rounded-full" /> */}
             <Tabs defaultValue="login" className="w-11/12 lg:w-8/12">

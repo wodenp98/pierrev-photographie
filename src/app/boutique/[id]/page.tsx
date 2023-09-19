@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { AccordionShop } from "@/components/Accordion/Accordion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCookie, setCookie } from "cookies-next";
 
 interface Props {
   params: {
@@ -19,6 +20,13 @@ interface Props {
 export default function BoutiqueItemId({ params: { id } }: Props) {
   const { toast } = useToast();
   const { data, isLoading, isError } = useGetBoutiqueItemByIdQuery(id);
+
+  let sortFilterDefault = "";
+
+  // useEffect runs on the client after DOM renders
+  useEffect(() => {
+    setCookie("cart", sortFilterDefault);
+  });
 
   if (isLoading) {
     return (
@@ -76,19 +84,19 @@ export default function BoutiqueItemId({ params: { id } }: Props) {
       </ul>
       <section className="w-11/12 mt-6 mx-auto">
         {/* ci dessous taille du composant? */}
-        <div className="flex flex-col lg:flex-row">
-          <div className="lg:w-1/2  flex justify-center">
+        <div className="flex flex-col  items-center lg:items-start  lg:max-h-[90vh] lg:flex-row">
+          <div className="lg:w-1/2 md:w-full flex justify-center">
             <Image
               src={data?.imageUrl as string}
               alt={data?.nom as string}
-              width={1080}
-              height={1080}
+              width={500}
+              height={800}
               // object contain?
-              className="object-contain h-full w-full"
+              className="object-contain h-full w-full md:max-h-[90vh]"
             />
           </div>
 
-          <div className="lg:w-1/2 mt-3 lg:ml-6 h-full">
+          <div className="flex flex-col  w-full md:w-10/12 justify-center mt-6 lg:w-1/2 lg:ml-6 ">
             <h1 className="text-3xl">{data?.nom}</h1>
             <p className="text-sm mt-6 text-gray-500">{data?.description}</p>
             <ShopForm

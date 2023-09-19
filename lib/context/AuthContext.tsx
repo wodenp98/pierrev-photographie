@@ -261,13 +261,16 @@ export const AuthContextProvider = ({ children }: any) => {
   };
 
   useEffect(() => {
+    console.log("user in useEffect", user);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("currentUser in onAuthStateChanged", currentUser);
       setUser(currentUser);
 
       if (
         currentUser &&
         currentUser.providerData[0].providerId !== "password"
       ) {
+        console.log("provider", currentUser.providerData[0].providerId);
         setDoc(doc(db, "users", currentUser.uid), {
           firstName: currentUser.displayName?.split(" ")[0],
           lastName: currentUser.displayName?.split(" ")[1],
@@ -281,7 +284,6 @@ export const AuthContextProvider = ({ children }: any) => {
 
     return () => unsubscribe();
   }, [user]);
-
   return (
     <AuthContext.Provider
       value={{

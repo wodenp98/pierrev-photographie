@@ -64,8 +64,10 @@ export default function Panier() {
   const handleDeleteFromCart = (id: string) => {
     const cartCookie = getCookie("cart");
     const cart = cartCookie ? JSON.parse(cartCookie) : [];
-
+    console.log(cart);
     const updatedCart = cart.filter((item: any) => item.id !== id);
+
+    console.log(updatedCart);
 
     setCookie("cart", JSON.stringify(updatedCart), {
       maxAge: 60 * 60 * 24 * 7,
