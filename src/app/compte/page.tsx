@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { CgLogOff } from "react-icons/cg";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCookie } from "cookies-next";
 
 export default function Compte() {
   const { user, isLoading, logOut } = UserAuth();
@@ -35,16 +36,18 @@ export default function Compte() {
   const { data: historyCommand } = useGetHistoryCommandQuery(user?.uid);
 
   useEffect(() => {
-    if (user) {
-      console.log("render if");
-      console.log(user, "user if");
-      setTimeout(() => setIsPageLoading(false), 2000);
-    } else if (!isLoading) {
-      console.log("render else");
-      console.log(user, "user else");
-      router.push("/login");
+    const userCookie = getCookie("user");
+    setIsPageLoading(true);
+    if (!userCookie) {
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } else {
+      setTimeout(() => {
+        setIsPageLoading(false);
+      }, 2000);
     }
-  }, [user, router, isLoading]);
+  }, [router]);
 
   const sortedArray = historyCommand
     ?.slice()
@@ -53,6 +56,8 @@ export default function Compte() {
   const handleSignOut = async () => {
     try {
       await logOut();
+      setIsPageLoading(true);
+      router.push("/login");
     } catch (error) {
       throw error;
     }
