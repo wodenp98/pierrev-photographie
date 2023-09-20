@@ -12,12 +12,12 @@ import {
 
 export default function NoDataForAUserWishlist() {
   return (
-    <section className="flex flex-col items-center mt-4">
-      <Card className="w-11/12 h-[400px]">
+    <section className="flex flex-col  items-center mt-4">
+      <Card className="w-11/12 h-[70vh]">
         <CardHeader>
           <CardTitle>Mon Panier</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="flex flex-col items-center justify-center">
           <div className="text-center">
             <BsCartX className="w-20 h-20 mx-auto  text-gray-500" />
             <p className="mt-8">Vous n'avez pas d'article dans votre panier</p>

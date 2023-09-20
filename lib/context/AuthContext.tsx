@@ -27,6 +27,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { set } from "js-cookie";
 
 const AuthContext = createContext<any>({});
 
@@ -46,15 +47,7 @@ export const AuthContextProvider = ({ children }: any) => {
       await createUserWithEmailAndPassword(auth, email, password).then(() => {
         const currentUser = auth.currentUser;
         if (currentUser) {
-          setCookie("user", currentUser.uid, {
-            maxAge: 60 * 60 * 24 * 7,
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            secure: true,
-            sameSite: "strict",
-            httpOnly: true,
-            path: "/",
-            domain: "localhost",
-          });
+          setCookie("user", currentUser.uid);
           setDoc(doc(db, "users", currentUser.uid), {
             firstName: firstName,
             lastName: lastName,
@@ -83,15 +76,7 @@ export const AuthContextProvider = ({ children }: any) => {
       await signInWithEmailAndPassword(auth, email, password);
       const currentUser = auth.currentUser;
       if (currentUser) {
-        setCookie("user", currentUser.uid, {
-          maxAge: 60 * 60 * 24 * 7,
-          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-          secure: true,
-          sameSite: "strict",
-          httpOnly: true,
-          path: "/",
-          domain: "localhost",
-        });
+        setCookie("user", currentUser.uid);
         router.push("/compte");
       }
     } catch (error) {
@@ -115,15 +100,8 @@ export const AuthContextProvider = ({ children }: any) => {
         //   sameSite: "strict",
         // });
 
-        setCookie("user", currentUser.uid, {
-          maxAge: 60 * 60 * 24 * 7,
-          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-          secure: true,
-          sameSite: "strict",
-          httpOnly: true,
-          path: "/",
-          domain: "localhost",
-        });
+        setCookie("user", currentUser.uid);
+        router.push("/compte");
       }
     } catch (error) {
       console.error("Failed to sign in with Google:", error);
@@ -228,8 +206,8 @@ export const AuthContextProvider = ({ children }: any) => {
   const deleteAccount = async () => {
     try {
       if (user) {
-        deleteCookie("user", { path: "/", domain: "localhost" });
-        deleteCookie("panier", { path: "/", domain: "localhost" });
+        deleteCookie("user");
+        deleteCookie("panier");
 
         const historyCollection = collection(db, `users/${user.uid}/history`);
         const historyDocs = await getDocs(historyCollection);
@@ -252,7 +230,7 @@ export const AuthContextProvider = ({ children }: any) => {
     try {
       setUser(null);
       signOut(auth);
-      deleteCookie("user", { path: "/", domain: "localhost" });
+      deleteCookie("user");
     } catch (error) {
       console.error("Failed to log out:", error);
     } finally {
@@ -281,7 +259,6 @@ export const AuthContextProvider = ({ children }: any) => {
 
     return () => unsubscribe();
   }, [user]);
-
   return (
     <AuthContext.Provider
       value={{

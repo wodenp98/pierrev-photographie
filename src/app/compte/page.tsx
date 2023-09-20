@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { CgLogOff } from "react-icons/cg";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCookie } from "cookies-next";
 
 export default function Compte() {
   const { user, isLoading, logOut } = UserAuth();
@@ -35,12 +36,18 @@ export default function Compte() {
   const { data: historyCommand } = useGetHistoryCommandQuery(user?.uid);
 
   useEffect(() => {
-    if (!user) {
-      router.push("/login");
+    const userCookie = getCookie("user");
+    setIsPageLoading(true);
+    if (!userCookie) {
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
     } else {
-      setIsPageLoading(false);
+      setTimeout(() => {
+        setIsPageLoading(false);
+      }, 2000);
     }
-  }, [user, router]);
+  }, [router]);
 
   const sortedArray = historyCommand
     ?.slice()
@@ -49,6 +56,8 @@ export default function Compte() {
   const handleSignOut = async () => {
     try {
       await logOut();
+      setIsPageLoading(true);
+      router.push("/login");
     } catch (error) {
       throw error;
     }
@@ -63,7 +72,7 @@ export default function Compte() {
       </ul>
 
       <section className="flex flex-col items-center justify-center mt-4">
-        {isPageLoading ? (
+        {isPageLoading || isLoading ? (
           <div className="flex flex-col items-center justify-center space-y-4 w-full">
             {/* <Skeleton className="w-16 h-16 bg-zinc-500 rounded-full" /> */}
             <Tabs defaultValue="login" className="w-11/12 lg:w-8/12">
