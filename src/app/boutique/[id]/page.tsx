@@ -10,7 +10,6 @@ import { useState, useEffect } from "react";
 import { ToastAction } from "@/components/ui/toast";
 import { AccordionShop } from "@/components/Accordion/Accordion";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCookie, setCookie } from "cookies-next";
 
 interface Props {
   params: {
@@ -20,13 +19,6 @@ interface Props {
 export default function BoutiqueItemId({ params: { id } }: Props) {
   const { toast } = useToast();
   const { data, isLoading, isError } = useGetBoutiqueItemByIdQuery(id);
-
-  let sortFilterDefault = "";
-
-  // useEffect runs on the client after DOM renders
-  useEffect(() => {
-    setCookie("cart", sortFilterDefault);
-  });
 
   if (isLoading) {
     return (

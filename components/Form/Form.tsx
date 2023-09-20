@@ -87,15 +87,7 @@ export const ShopForm = ({ product }: any) => {
     impression: "",
   });
   const addToCart = (product: any) => {
-    setCookie("cart", JSON.stringify(product), {
-      maxAge: 60 * 60 * 24 * 7,
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      secure: true,
-      sameSite: "strict",
-      httpOnly: true,
-      path: "/",
-      domain: "localhost",
-    });
+    setCookie("cart", JSON.stringify(product));
   };
 
   const getPrice = (formValues: FormValues) => {

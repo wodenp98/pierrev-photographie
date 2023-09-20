@@ -29,6 +29,8 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCookie } from "cookies-next";
+import { set } from "js-cookie";
 
 const profileFormSchema = z
   .object({
@@ -105,12 +107,13 @@ export default function Login() {
   const [isPageLoading, setIsPageLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    const userCookie = getCookie("user");
+
+    if (userCookie) {
       router.push("/compte");
-    } else {
-      setIsPageLoading(false);
     }
-  }, [user, router]);
+    setIsPageLoading(false);
+  }, [router]);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),

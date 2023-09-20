@@ -42,7 +42,7 @@ type CartItem = {
 
 export default function Panier() {
   const { user } = UserAuth();
-  const [isPageLoading, setIsPageLoading] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const [cart, setCart] = useState<CartItem[]>([]);
   const { toast } = useToast();
 
@@ -52,6 +52,7 @@ export default function Panier() {
       try {
         const parsedCartItem = JSON.parse(cartItem);
         setCart(parsedCartItem);
+        setIsPageLoading(false);
       } catch (error) {
         console.error("Error parsing cart item:", error);
       }
@@ -69,15 +70,7 @@ export default function Panier() {
 
     console.log(updatedCart);
 
-    setCookie("cart", JSON.stringify(updatedCart), {
-      maxAge: 60 * 60 * 24 * 7,
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      secure: true,
-      sameSite: "strict",
-      httpOnly: true,
-      path: "/",
-      domain: "localhost",
-    });
+    setCookie("cart", JSON.stringify(updatedCart));
 
     setCart(updatedCart);
   };
