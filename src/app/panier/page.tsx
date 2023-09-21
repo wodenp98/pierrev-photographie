@@ -57,6 +57,7 @@ export default function Panier() {
         console.error("Error parsing cart item:", error);
       }
     }
+    setIsPageLoading(false);
   }, []);
 
   if (cart.length === 0 && !isPageLoading) {

@@ -87,7 +87,13 @@ export const ShopForm = ({ product }: any) => {
     impression: "",
   });
   const addToCart = (product: any) => {
-    setCookie("cart", JSON.stringify(product));
+    setCookie("cart", JSON.stringify(product), {
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10),
+      path: "/",
+      secure: true,
+      sameSite: "strict",
+      httpOnly: true,
+    });
   };
 
   const getPrice = (formValues: FormValues) => {
